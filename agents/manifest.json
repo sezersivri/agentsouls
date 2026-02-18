@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "repo_root_convention": "All paths relative to repo root",
+  "agents": [
+    {
+      "name": "Miles",
+      "slug": "miles",
+      "domain": "aerospace",
+      "role": "Aerodynamicist (Lead)",
+      "description": "Lead aerodynamicist responsible for flight dynamics, stability analysis, and aerodynamic design validation.",
+      "model": "opus",
+      "capabilities": ["python", "jsbsim", "matlab", "openvsp", "flight-dynamics"],
+      "tags": ["lead", "aerospace"],
+      "paths": {
+        "core": "agents/aerospace/miles/CORE.md",
+        "cheatsheets": "agents/aerospace/miles/cheatsheets/",
+        "cheatsheet_index": "agents/aerospace/miles/cheatsheets/_index.md",
+        "memory": "agents/aerospace/miles/memory/",
+        "mistakes": "agents/aerospace/miles/memory/mistakes.md",
+        "session_log": "agents/aerospace/miles/memory/session-log.md",
+        "decisions": "agents/aerospace/miles/memory/decisions.md"
+      },
+      "delegates_to": [],
+      "defers_to": [],
+      "escalates_to": []
+    },
+    {
+      "name": "Sam",
+      "slug": "sam",
+      "domain": "software-dev",
+      "role": "Backend Developer",
+      "description": "Backend developer responsible for API implementation, data access layers, scientific computing pipelines, and server-side business logic.",
+      "model": "sonnet",
+      "capabilities": ["python", "fastapi", "sqlalchemy", "postgresql", "pytest", "async"],
+      "tags": ["specialist", "software-dev"],
+      "paths": {
+        "core": "agents/software-dev/sam/CORE.md",
+        "cheatsheets": "agents/software-dev/sam/cheatsheets/",
+        "cheatsheet_index": "agents/software-dev/sam/cheatsheets/_index.md",
+        "memory": "agents/software-dev/sam/memory/",
+        "mistakes": "agents/software-dev/sam/memory/mistakes.md",
+        "session_log": "agents/software-dev/sam/memory/session-log.md",
+        "decisions": "agents/software-dev/sam/memory/decisions.md"
+      },
+      "delegates_to": [],
+      "defers_to": [],
+      "escalates_to": []
+    }
+  ]
+}

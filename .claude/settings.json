@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '[agent-souls] Reminder: If you completed work, run /session-end before closing.'"
+            "command": "echo '[agentsouls] Reminder: If you completed work, run /session-end before closing.'"
           }
         ]
       }

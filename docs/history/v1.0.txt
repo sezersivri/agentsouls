@@ -1,0 +1,65 @@
+Agent Souls v1.0 — Project History
+====================================
+Date: 2025-02-18 (inception) through 2026-02-18 (v1.0)
+
+1. Origin
+---------
+Agent Souls began as a conversation between Sezer Sivri and Claude about a
+persistent AI team system. The core idea: instead of stateless coding agents
+that forget everything between sessions, create named specialists with
+identities, domain knowledge, and memory of past work — all stored as
+version-controlled Markdown files in Git.
+
+The conversation explored existing tools (Letta/MemGPT, CrewAI, AutoGen,
+OpenHands) and concluded that while multi-agent orchestration frameworks
+existed, none offered a lightweight, file-based approach to persistent agent
+identity that worked across different AI CLI tools. Claude Code's built-in
+sub-agent spawning already handled orchestration — what was missing was the
+"who they are and what they know" layer.
+
+2. Design Decisions
+-------------------
+Key decisions from the initial design phase:
+
+- Markdown-native: All agent data stored as plain .md files, readable by
+  humans and AI tools alike. No databases, no runtimes.
+- Git-first: Every learning, mistake, and session is a git commit. Agents
+  have a literal commit history of their growth.
+- Cheatsheet pattern: Instead of loading full textbooks into context, agents
+  create compressed "cheatsheets" from reference materials. This preserves
+  context window space while retaining actionable knowledge.
+- Progressive disclosure: Agents load only CORE.md + mistakes + cheatsheet
+  index at startup. Full cheatsheets load on-demand per task.
+- Cross-tool compatibility: Designed primarily for Claude Code (.claude/agents/)
+  but also packaged as skills (.agents/skills/) for Gemini CLI and Codex CLI.
+- Model-tier routing: Opus for domain leads and complex analysis, Sonnet for
+  specialist implementation, Haiku for testing and documentation tasks.
+- Session-end protocol: Mandatory self-update sequence (session log, mistakes,
+  decisions, cheatsheets) enforced through GENERAL_RULES.md.
+
+3. Original Blueprint
+---------------------
+The master blueprint defined the full architecture: repository structure,
+file specifications (CORE.md, cheatsheet template, memory templates),
+starter agent definitions, and an 8-phase implementation plan covering
+repo setup, agent identity creation, knowledge seeding, integration
+testing, and ongoing self-improvement loops.
+
+The blueprint established three starter agents (an aerodynamicist, a software
+developer, and a research analyst) as proof of concept, with the system
+designed to scale to any number of agents across any professional domain.
+
+4. Evolution to v1.0
+---------------------
+The project evolved from the original 3-agent concept to a full roster of
+17 agents across 6 domains (aerospace, software development, research,
+game development, iOS development, and financial). Key additions during
+development:
+
+- Single source of truth: agents/manifest.json as the machine-readable
+  registry, with auto-generation of tool-specific config files.
+- Validation system: Python-based validation script for CI integration.
+- Cross-tool packaging: SKILL.md files for Gemini/Codex alongside native
+  Claude Code agent wrappers.
+- Three-AI review: Claude Code, Gemini CLI, and Codex CLI collaboratively
+  reviewed the architecture and produced a consensus improvement plan.

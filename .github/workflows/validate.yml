@@ -1,0 +1,27 @@
+name: Validate Agent Souls
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run validation
+        run: python scripts/validate.py
+
+      - name: Check generated file drift
+        run: python scripts/generate-tool-configs.py --check
+
+      - name: Check index accuracy
+        run: bash scripts/update-indexes.sh --check

@@ -3,11 +3,21 @@
 > Every agent in this system MUST follow these rules. No exceptions.
 > These rules are loaded before any agent-specific instructions.
 
+## 0. Rule Hierarchy
+
+When rules conflict, follow this precedence order (highest first):
+
+1. **Project-local rules** — rules defined in the parent project's CLAUDE.md or project config
+2. **GENERAL_RULES.md** — this file, the universal constitution
+3. **CORE.md hard rules** — agent-specific constraints
+
+If a project-local rule contradicts GENERAL_RULES.md, the project-local rule wins. If a CORE.md hard rule contradicts GENERAL_RULES.md, GENERAL_RULES.md wins unless the CORE.md rule is more restrictive (more restrictive always wins).
+
 ## 1. Identity Protocol
 
 When summoned (starting a session), every agent MUST:
 
-1. Read their own `SOUL.md` completely — this is who you are
+1. Read their own `CORE.md` completely — this is who you are
 2. Check `memory/mistakes.md` — know what to avoid
 3. Scan `cheatsheets/_index.md` — know what knowledge is available
 4. Load only the cheatsheets relevant to the current task (progressive disclosure)
@@ -24,18 +34,33 @@ When summoned (starting a session), every agent MUST:
 
 ### Session End Protocol (MANDATORY — do this before EVERY session ends)
 
-1. **Update session log:** Add entry to `memory/session-log.md` with what you did, learned, and any mistakes
+1. **Update session log:** Add entry to `memory/session-log.md` with a unique session ID (format: `{slug}-{YYYY-MM-DD}-{NNN}` where NNN is zero-padded, auto-incremented from existing entries for that date). Include what you did, learned, and any mistakes.
 2. **Record mistakes:** Ensure all mistakes are in `memory/mistakes.md` with root cause and prevention
 3. **Record decisions:** Ensure key decisions are in `memory/decisions.md` with rationale
 4. **Update cheatsheets:** If you learned anything new, create or update cheatsheets
 5. **Cross-agent learnings:** If your work affects other agents, update `shared-knowledge/cross-agent-learnings.md`
-6. **Commit:** `git add . && git commit -m "[agent-name] session YYYY-MM-DD: brief description"`
+6. **Commit (recommended):** `git add . && git commit -m "[agent-name] session YYYY-MM-DD: brief description"` — Memory updates above are MANDATORY; the git commit is RECOMMENDED but not required (agents may run in dirty trees or user-controlled workflows).
 
 ### Memory Hygiene
 - Cheatsheets: max ~500 lines each. If one grows too large, split it into focused sub-topics
 - One topic per cheatsheet file. Use kebab-case filenames
 - Always update `cheatsheets/_index.md` when adding/modifying cheatsheets
 - Mark confidence levels: `[VERIFIED]` `[TEXTBOOK]` `[DERIVED]` `[UNCERTAIN]`
+
+### Memory Pruning
+
+When `memory/session-log.md` exceeds 100 entries:
+
+1. Archive older entries to `memory/session-log-archive.md`
+2. Keep only the 20 most recent entries in `memory/session-log.md`
+3. Update `memory/long-term-summary.md` with compressed summaries of archived sessions
+
+**Long-term summary format** (bulleted, date-keyed):
+```
+- **YYYY-MM-DD**: Brief outcome description. Key decision or discovery. [sessions: slug-YYYY-MM-DD-NNN through -NNN]
+```
+
+This ensures agents can always load their full memory context without exhausting the context window.
 
 ## 3. Knowledge Consumption Protocol
 
@@ -54,11 +79,11 @@ When studying a reference document (PDF, textbook, paper, documentation):
 ### Communicating with Other Agents
 - Use `shared-knowledge/active-tasks.md` for real-time task coordination
 - Use `shared-knowledge/cross-agent-learnings.md` for knowledge that spans domains
-- Never modify another agent's SOUL.md or memory files
+- Never modify another agent's CORE.md or memory files
 - You MAY read other agents' cheatsheets if relevant to your work
 
 ### Delegation
-- Only delegate to agents listed in your SOUL.md `Delegates to` field
+- Only delegate to agents listed in your CORE.md `Delegates to` field
 - When delegating, provide clear context: what you need, why, and any constraints
 - When receiving delegated work, check the requesting agent's relevant cheatsheets
 
@@ -111,7 +136,7 @@ After completing any significant task:
 - Every meaningful change should be committed with a descriptive message
 - Commit format: `[agent-name] [action]: [brief description]`
 - Examples:
-  - `[dr-kaya] learned: fin effectiveness factors from DATCOM Chapter 5`
+  - `[miles] learned: fin effectiveness factors from aerodynamics reference`
   - `[backend-dev] fix: corrected API endpoint validation logic`
   - `[architect] decision: chose PostgreSQL over MongoDB for structured data`
 - Never force-push. Never rewrite history.

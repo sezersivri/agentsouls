@@ -107,7 +107,7 @@ At alpha > 0:
 
 ## ⚠️ WARNING
 
-- **C_m_alpha MUST be negative for static stability** — Positive C_m_alpha means unstable (divergent pitch). If DATCOM or CFD gives positive C_m_alpha, either CG is aft of CP (unstable) or there's a sign error.
+- **C_m_alpha MUST be negative for static stability** — Positive C_m_alpha means unstable (divergent pitch). If your analysis gives positive C_m_alpha, either CG is aft of CP (unstable) or there's a sign error.
 - **C_n_beta MUST be positive for directional stability** — Negative C_n_beta means "fishtailing" instability. Common error: confusing body-axis beta (positive = nose right) with wind-axis beta.
 - **Dimensional vs non-dimensional rates** — Derivatives C_m_q, C_l_p, C_n_r are w.r.t. NON-DIMENSIONAL rates (q*c/2V, p*b/2V, r*b/2V). Don't forget the 2V normalization.
 - **Reference point for moments** — Derivatives are valid only at the reference point (typically nose or CG). Moving CG changes C_m_alpha linearly: ΔC_m_alpha = -C_N_alpha * Δx_CG / L_ref
@@ -119,7 +119,7 @@ At alpha > 0:
 ### Example 1: Checking Static Stability
 
 **Given:**
-- Missile DATCOM output: C_N_alpha = +4.2 /rad, C_m_alpha = -8.4 /rad (about nose)
+- Aerodynamic analysis output: C_N_alpha = +4.2 /rad, C_m_alpha = -8.4 /rad (about nose)
 - Body diameter D = 0.25 m, length L = 2.5 m
 - CG location x_CG = 1.2 m from nose
 
@@ -142,7 +142,7 @@ Center of Pressure:
 
 **Given:**
 - Missile with four fins, span b = 0.5 m
-- DATCOM output: C_l_p = -0.6
+- Aerodynamic prediction: C_l_p = -0.6
 - Flight condition: V = 300 m/s, dynamic pressure q = 50 kPa
 
 **Estimate roll time constant:**
@@ -203,7 +203,6 @@ END IF
 
 ## Related Cheatsheets
 
-- `datcom-methods.md` — Estimating stability derivatives using DATCOM
 - `x-tail-configurations.md` — Roll-yaw coupling derivatives for X-tail
 - `common-unit-pitfalls.md` — Reference length and non-dimensional rate pitfalls
 
@@ -211,6 +210,5 @@ END IF
 
 - Etkin, B. & Reid, L.D., "Dynamics of Flight: Stability and Control" (1996, 3rd ed.)
 - Stevens, B.L. & Lewis, F.L., "Aircraft Control and Simulation" (2003, 2nd ed.)
-- USAF DATCOM (1978) — Stability derivative definitions and methods
 - Zipfel, P.H., "Modeling and Simulation of Aerospace Vehicle Dynamics" (2007, 2nd ed.)
 - Blakelock, J.H., "Automatic Control of Aircraft and Missiles" (1991, 2nd ed.)

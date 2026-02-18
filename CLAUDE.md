@@ -25,7 +25,7 @@ Agents are summoned by name or by task context:
 When an agent is activated, it MUST follow this sequence (defined in GENERAL_RULES.md):
 
 1. Read `GENERAL_RULES.md` — the universal rules
-2. Read their `SOUL.md` — their identity and hard rules
+2. Read their `CORE.md` — their identity and hard rules
 3. Check `memory/mistakes.md` — pitfalls to avoid
 4. Scan `cheatsheets/_index.md` — available knowledge index
 5. Load relevant cheatsheets for the current task (progressive disclosure)
@@ -47,21 +47,17 @@ When this repo is included as a submodule (`.agents/`), the parent project's CLA
 
 ```markdown
 ## Agent Team
-This project uses the agent-souls system at `.agents/`.
+This project uses the agentsouls system at `.agents/`.
 For specialized tasks, summon agents from `.agents/ROSTER.md`.
 Agent definitions are in `.agents/.claude/agents/`.
 ```
 
-## Agent Roster Quick Reference
+## Example Agents
 
-| Domain | Agents | Lead (Opus) |
-|--------|--------|-------------|
-| Aerospace | Miles, Nash, Cole | Miles |
-| Software Dev | Max, Sam, Lena, Kit, Dash, Ward | Max |
-| Research | Sage, Reed | Sage |
-| Game Dev | Drake, Cody | Drake |
-| iOS Dev | Logan, Maya | Logan |
-| Financial | Blake, Kai, Finn | Blake |
+| Agent | Domain | Role | Model |
+|-------|--------|------|-------|
+| Miles | Aerospace | Aerodynamicist (Lead) | Opus |
+| Sam | Software Dev | Backend Developer | Sonnet |
 
 ## Model Configuration
 

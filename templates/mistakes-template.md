@@ -14,6 +14,6 @@
 **Impact:** [What went wrong as a result]
 **Fix:** [How it was corrected]
 **Prevention:** [Specific rule or check to prevent recurrence]
-**Related rule:** [If a new Hard Rule was added to SOUL.md, reference it here]
+**Related rule:** [If a new Hard Rule was added to CORE.md, reference it here]
 
 ---

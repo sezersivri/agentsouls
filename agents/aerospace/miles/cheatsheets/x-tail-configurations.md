@@ -125,7 +125,7 @@ For φ = 45°, α = 10° = 0.174 rad:
 
 - **Roll control required for X-tail at high alpha** — Induced roll from C_l_alpha grows with alpha. If no roll control (e.g., no ailerons or tail rotor), missile will roll uncontrollably at high alpha. Plan for 4-channel control (roll, pitch, yaw, + throttle) or accept rolling airframe.
 - **Control allocation singularities** — If commanded pitch/yaw is near 45° or 135° planes, fins may saturate asymmetrically. Add anti-windup logic to prevent fin deflection limiting from degrading stability.
-- **Fin-fin interference in X-tail** — Trailing vortices from one fin impinge on adjacent fin in roll. Reduces effective fin lift by 5-15% compared to isolated fin. DATCOM underestimates this; use CFD or wind tunnel for critical designs.
+- **Fin-fin interference in X-tail** — Trailing vortices from one fin impinge on adjacent fin in roll. Reduces effective fin lift by 5-15% compared to isolated fin. Semi-empirical methods underestimate this; use CFD or wind tunnel for critical designs.
 - **Ground launch constraints** — X-tail requires launcher rail designed for diagonal fins. Ensure fin clearance > 10 mm on rail; dynamic launch loads can cause fin strikes if tolerances tight.
 - **Manufacturing cost** — X-tail requires either: (a) body rolled 45° for fin attachment, or (b) adapter rings. Adds cost vs +-tail.
 
@@ -218,7 +218,6 @@ END IF
 ## Related Cheatsheets
 
 - `stability-derivatives.md` — Roll-yaw coupling derivatives (C_n_p, C_l_r)
-- `datcom-methods.md` — Body-fin interference for cruciform configurations
 - `common-unit-pitfalls.md` — Fin numbering and sign conventions
 
 ## Sources

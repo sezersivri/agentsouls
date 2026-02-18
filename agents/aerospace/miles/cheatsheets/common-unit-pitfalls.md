@@ -20,7 +20,7 @@ version: "1.0"
 
 **Defense Strategy:**
 - **Always check units explicitly** — Write units next to every number in hand calculations
-- **Verify reference quantities** — Sref, Lref, Xref must match between DATCOM, CFD, and flight code
+- **Verify reference quantities** — Sref, Lref, Xref must match between analysis tools, CFD, and flight code
 - **Dimensional analysis** — If units don't cancel correctly, equation is wrong
 
 **Famous Mishaps:**
@@ -75,7 +75,7 @@ Common error:
 ### Pattern 2: Converting Stability Derivatives (Degrees to Radians)
 
 ```
-DATCOM outputs C_m_alpha in /rad:
+Aerodynamic tool outputs C_m_alpha in /rad:
   C_m_alpha = -10 /rad
 
 If angle of attack in degrees:
@@ -91,12 +91,12 @@ Then:
 ```
 
 **When to use:** Anytime derivatives interface with flight code or spreadsheets
-**Watch out for:** Some tools (e.g., Missile DATCOM) output both /rad and /deg versions — check file header
+**Watch out for:** Some tools output both /rad and /deg versions — check file header
 
 ### Pattern 3: Reference Area Consistency
 
 ```
-DATCOM reference area (missiles):
+Typical reference area (cylindrical bodies):
   S_ref = π * D² / 4  (base area, circular cross-section)
 
 CFD may use different reference:
@@ -116,7 +116,7 @@ If CFD used wetted area but flight code expects base area:
 ## ⚠️ WARNING
 
 - **Degrees vs Radians in Derivatives** — Most aero derivatives (C_N_alpha, C_m_q, etc.) are **per radian**. If your flight code uses degrees for alpha, you MUST convert the derivative: C_N_alpha_deg = C_N_alpha_rad * (π/180). Missing this gives 57× error!
-- **Reference Length for Moments** — Pitch moment uses L_ref (diameter or chord), roll/yaw use b (span). If you mix them, moment coefficients are wrong by factor of b/L_ref (can be 2-4×). Check DATCOM input file.
+- **Reference Length for Moments** — Pitch moment uses L_ref (diameter or chord), roll/yaw use b (span). If you mix them, moment coefficients are wrong by factor of b/L_ref (can be 2-4×). Check tool input file.
 - **Slugs vs Kilograms** — US aerodynamic tools often use slugs (Imperial mass unit). 1 slug = 14.59 kg. Confusing mass with weight causes √(g) ≈ 3.13× error in dynamic calculations.
 - **Moment Reference Point (MRP)** — Aerodynamic coefficients (C_m, C_n, C_l) are valid only at the defined MRP. Moving MRP by Δx changes C_m by -C_N * Δx / L_ref. **Always document MRP location.**
 - **Non-dimensional Rates** — Derivatives C_m_q, C_l_p, C_n_r use **non-dimensional rates**: q*c/2V, p*b/2V, r*b/2V. Don't forget the 2V divisor! Missing it gives 2V error (can be 100-1000×).
@@ -134,7 +134,7 @@ Flight code:
   alpha_cmd = delta_stick  (in degrees)
   C_m = C_m_delta * delta_stick + C_m_alpha * alpha
 
-DATCOM table loaded:
+Aero table loaded:
   C_m_alpha = -10 /rad  (per radian, as labeled)
 
 Simulation alpha = 1°:
@@ -207,7 +207,7 @@ N = 4 /rad * 0.1 rad * 47880 Pa * 0.0707 m²
 ### Example 4: Moment Reference Point Shift
 
 **Given:**
-- DATCOM output: C_m_alpha = -8 /rad (about nose, X_ref = 0)
+- Aerodynamic output: C_m_alpha = -8 /rad (about nose, X_ref = 0)
 - Flight code needs C_m_alpha about CG at X_CG = 1.5 m
 - Missile diameter D = 0.25 m (L_ref), C_N_alpha = 4 /rad
 
@@ -258,7 +258,6 @@ IF calculation result seems wrong (off by 10×, 50×, 1000×):
 
 ## Related Cheatsheets
 
-- `datcom-methods.md` — DATCOM reference area/length definitions
 - `stability-derivatives.md` — Derivative units and non-dimensional rates
 - `x-tail-configurations.md` — Fin numbering and sign conventions
 
@@ -267,5 +266,4 @@ IF calculation result seems wrong (off by 10×, 50×, 1000×):
 - AIAA G-003B-2010, "Guide for the Verification and Validation of Computational Fluid Dynamics Simulations"
 - NASA-STD-7009A, "Standard for Models and Simulations" (2016) — Unit consistency requirements
 - "Mars Climate Orbiter Mishap Investigation Board Phase I Report" (1999) — Unit conversion failure case study
-- Blake, W.B., "Missile DATCOM User's Manual" (1998) — Reference quantity definitions
 - Failure case database: IEEE Xplore, "Software Engineering Disasters" collection

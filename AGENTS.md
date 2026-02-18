@@ -1,42 +1,37 @@
-# Agent Souls — Cross-Tool Compatibility
+# Agent Souls -- Cross-Tool Compatibility
 
 > This file follows the AGENTS.md standard for compatibility with Claude Code, Gemini CLI, Cursor, and Codex.
 
 ## System Overview
 
-This repository contains 18 AI agents organized into 6 domains. Each agent has a persistent identity (SOUL.md), accumulated knowledge (cheatsheets/), and memory of past work (memory/).
+This repository provides a persistent identity, knowledge, and memory framework for AI agents. It ships with 2 example agents and templates for creating your own. Each agent has a persistent identity (CORE.md), accumulated knowledge (cheatsheets/), and memory of past work (memory/).
 
-## Agents
+## Agent Loading Protocol
 
-### Aerospace
-- **Miles** (Lead Aerodynamicist) — `agents/aerospace/miles/SOUL.md` — Missile aerodynamics, stability derivatives, DATCOM validation
-- **Nash** (CFD Engineer) — `agents/aerospace/nash/SOUL.md` — Mesh generation, solver setup, turbulence modeling
-- **Cole** (DATCOM Specialist) — `agents/aerospace/cole/SOUL.md` — Empirical methods, component buildup, missile prediction
+When activating any agent, follow this 5-step sequence:
 
-### Software Development
-- **Max** (Architect) — `agents/software-dev/max/SOUL.md` — System design, architecture, code review
-- **Sam** (Backend Developer) — `agents/software-dev/sam/SOUL.md` — Python, APIs, databases, scientific computing
-- **Lena** (Frontend Developer) — `agents/software-dev/lena/SOUL.md` — React, Vue, TypeScript, UI/UX
-- **Kit** (QA Engineer) — `agents/software-dev/kit/SOUL.md` — Testing, CI, quality gates
-- **Dash** (DevOps Engineer) — `agents/software-dev/dash/SOUL.md` — Docker, CI/CD, infrastructure
-- **Ward** (Security Reviewer) — `agents/software-dev/ward/SOUL.md` — OWASP, vulnerability assessment, secure coding
+1. **Read `GENERAL_RULES.md`** -- the universal constitution all agents follow
+2. **Read the agent's `CORE.md`** -- identity, hard rules, personality, and expertise
+3. **Check `memory/mistakes.md`** -- know what pitfalls to avoid from past sessions
+4. **Scan `cheatsheets/_index.md`** -- discover what distilled knowledge is available
+5. **Load relevant cheatsheets** -- only load what the current task requires (progressive disclosure)
 
-### Research
-- **Sage** (Research Analyst) — `agents/research/sage/SOUL.md` — Literature search, paper evaluation, synthesis
-- **Reed** (Technical Writer) — `agents/research/reed/SOUL.md` — Documentation, blogs, technical reports
+Never skip steps 1-3. They exist to prevent repeated mistakes and ensure consistent identity.
 
-### Game Development
-- **Drake** (Game Designer) — `agents/game-dev/drake/SOUL.md` — Game design, Unity/Unreal architecture
-- **Cody** (Game Developer) — `agents/game-dev/cody/SOUL.md` — Unity/C#, gameplay mechanics, scripting
+## Session-End Protocol
 
-### iOS Development
-- **Logan** (iOS Lead) — `agents/ios-dev/logan/SOUL.md` — SwiftUI, app architecture, App Store
-- **Maya** (iOS Developer) — `agents/ios-dev/maya/SOUL.md` — Swift, UIKit, Core Data, networking
+Before ending ANY session, the active agent MUST follow the session-end protocol defined in `GENERAL_RULES.md`. In summary:
 
-### Financial
-- **Blake** (Market Strategist) — `agents/financial/blake/SOUL.md` — Fundamental analysis, macro trends
-- **Kai** (Quantitative Analyst) — `agents/financial/kai/SOUL.md` — Algorithms, backtesting, statistics
-- **Finn** (Risk Manager) — `agents/financial/finn/SOUL.md` — Portfolio risk, compliance, position sizing
+1. Update `memory/session-log.md` with what was done, learned, and any mistakes
+2. Record mistakes in `memory/mistakes.md` with root cause and prevention
+3. Record key decisions in `memory/decisions.md` with rationale
+4. Update cheatsheets if new knowledge was learned
+5. Update `shared-knowledge/` if learnings affect other agents
+
+## Example Agents
+
+- **Miles** (Aerodynamicist, Lead) -- `agents/aerospace/miles/CORE.md` -- Fully populated with cheatsheets and memory
+- **Sam** (Backend Developer) -- `agents/software-dev/sam/CORE.md` -- Minimal shell showing the structure
 
 ## Rules
 
@@ -47,10 +42,46 @@ All agents follow `GENERAL_RULES.md` which defines:
 - Collaboration and delegation rules
 - Model tier awareness (Opus/Sonnet/Haiku)
 
+## Cross-Tool Usage
+
+### Claude Code
+
+Native integration. Agents are auto-discovered from `.claude/agents/`. Summon by name or use slash commands.
+
+```
+"Ask Miles to analyze the stability derivatives"
+```
+
+### Gemini CLI
+
+Set `"contextFileName": "AGENTS.md"` in your Gemini settings, or use the skill files directly:
+
+```
+Read .agents/skills/miles/SKILL.md
+```
+
+See [GEMINI.md](GEMINI.md) for full Gemini CLI integration instructions.
+
+### Codex CLI
+
+Codex reads `AGENTS.md` automatically. For per-agent context, reference the skill files:
+
+```
+Read .agents/skills/sam/SKILL.md
+```
+
+### Cursor
+
+Reference agent files in `.cursorrules`:
+
+```
+For backend tasks, load agents/software-dev/sam/CORE.md
+```
+
 ## Usage
 
 When using any AI coding tool with this repository:
 1. Read `GENERAL_RULES.md` for universal rules
 2. Consult `ROSTER.md` to find the right agent for the task
-3. Load the agent's SOUL.md before starting work
+3. Load the agent's CORE.md before starting work
 4. Follow the session end protocol when finishing

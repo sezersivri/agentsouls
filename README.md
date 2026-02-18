@@ -1,151 +1,150 @@
 # Agent Souls
 
-A persistent identity, knowledge, and memory system for AI agent teams. Each agent has a defined role, accumulated expertise, and memory of past sessions — all stored as version-controlled markdown files.
+**Status: Public Alpha**
 
-## What This Is
+A persistent identity, knowledge, and memory system for AI agent teams — built on Markdown and Git.
 
-This repository stores the "souls" of AI agents — their personalities, hard rules, domain knowledge (as cheatsheets), and memories of past work. When connected to Claude Code (or other AI coding tools), agents are summoned with their full context, making them consistent, knowledgeable team members that learn over time.
+## Purpose
 
-**Key features:**
-- **Persistent memory** — agents remember mistakes and don't repeat them
-- **Distilled knowledge** — cheatsheets compress textbooks into actionable reference
-- **Version-controlled growth** — every learning is a git commit
-- **Multi-tool compatible** — works with Claude Code, Gemini CLI, Cursor, and others
-- **Model-tier routing** — Opus for leads, Sonnet for specialists, Haiku for utilities
+Most coding agents forget everything between sessions. Your agent doesn't know your conventions, repeats yesterday's mistakes, and loses hard-won domain knowledge every time you close the terminal.
 
-## Quick Start
+**Agent Souls fixes this.** Each agent gets a persistent identity (`CORE.md`), accumulated expertise (cheatsheets), and memory of past sessions — all stored as version-controlled files. When an agent is summoned, it loads who it is, what it knows, and what it's learned from past mistakes. When the session ends, it writes back what it learned.
 
-### Using with Claude Code
+No databases. No runtimes. Just files you can read, version, and control.
 
-This repo is designed to be added as a **git submodule** to any project:
+## Who This Is For
+
+**Yes, if you:**
+- Use AI CLI tools (Claude Code, Gemini CLI, Codex CLI) for real work
+- Want agents that remember your project conventions and past mistakes
+- Prefer inspectable, version-controlled configuration over opaque platforms
+- Build across multiple projects and want shared agent knowledge
+
+**Not yet, if you:**
+- Want a turnkey platform with a GUI — this is a file-based system for CLI power users
+- Need real-time multi-agent communication — agents share knowledge through files, not live messaging
+- Expect a polished consumer product — this is an early-stage framework
+
+## Quickstart
+
+### Solo Developer — Try It Now
+
+**Claude Code:**
+```bash
+git clone https://github.com/sezersivri/agentsouls.git
+cd agentsouls
+claude  # Agents auto-discovered from .claude/agents/
+# Say: "Ask Miles to analyze the stability derivatives"
+```
+
+**Gemini CLI:**
+```bash
+git clone https://github.com/sezersivri/agentsouls.git
+cd agentsouls
+# Add to your Gemini settings: "contextFileName": "AGENTS.md"
+gemini
+# Say: "Load Miles from .agents/skills/miles/SKILL.md and analyze stability"
+```
+
+**Codex CLI:**
+```bash
+git clone https://github.com/sezersivri/agentsouls.git
+cd agentsouls
+codex  # Reads AGENTS.md automatically
+# Say: "Use the Sam agent skill at .agents/skills/sam/SKILL.md for backend work"
+```
+
+### Team Lead — Add to Your Project
 
 ```bash
-# Add to your project
-git submodule add https://github.com/sezersivri/agent-souls.git .agents
+# Add as a git submodule
+git submodule add https://github.com/sezersivri/agentsouls.git .agents
 
 # In your project's CLAUDE.md, add:
 # See .agents/CLAUDE.md for agent team instructions
-```
-
-Or use it standalone:
-
-```bash
-git clone https://github.com/sezersivri/agent-souls.git
-cd agent-souls
-claude  # Start Claude Code in this directory
-```
-
-### Summoning an Agent
-
-Claude Code automatically discovers agents from `.claude/agents/`. You can:
-
-1. **Direct mention:** "Ask Miles to analyze the stability derivatives"
-2. **Slash command:** Use `/summon miles` to load an agent's full context
-3. **Agent Teams:** Launch multiple agents working in parallel on complex tasks
-
-### Agent Roster
-
-See [ROSTER.md](ROSTER.md) for the full directory of 18 agents across 6 domains:
-
-| Domain | Agents | Lead |
-|--------|--------|------|
-| Aerospace | Miles, Nash, Cole | Miles (Opus) |
-| Software Dev | Max, Sam, Lena, Kit, Dash, Ward | Max (Opus) |
-| Research | Sage, Reed | Sage (Sonnet) |
-| Game Dev | Drake, Cody | Drake (Opus) |
-| iOS Dev | Logan, Maya | Logan (Opus) |
-| Financial | Blake, Kai, Finn | Blake (Opus) |
-
-## Architecture
-
-```
-agent-souls/
-├── CLAUDE.md                    # Claude Code integration instructions
-├── AGENTS.md                    # Cross-tool compatibility (Gemini, Cursor)
-├── GENERAL_RULES.md             # The Constitution — rules all agents follow
-├── ROSTER.md                    # Agent directory and summoning protocol
-├── agents/                      # Agent definitions (portable format)
-│   ├── aerospace/
-│   │   ├── miles/
-│   │   │   ├── SOUL.md          # Identity, rules, personality
-│   │   │   ├── cheatsheets/     # Distilled domain knowledge
-│   │   │   ├── references/      # Source materials (PDFs, papers)
-│   │   │   └── memory/          # Session logs, mistakes, decisions
-│   │   ├── nash/
-│   │   └── cole/
-│   ├── software-dev/            # 6 agents: max, sam, lena, kit, dash, ward
-│   ├── research/                # 2 agents: sage, reed
-│   ├── game-dev/                # 2 agents: drake, cody
-│   ├── ios-dev/                 # 2 agents: logan, maya
-│   └── financial/               # 3 agents: blake, kai, finn
-├── shared-knowledge/            # Cross-agent shared context
-├── templates/                   # Templates for new agents/cheatsheets
-└── .claude/
-    ├── agents/                  # Native Claude Code agent wrappers
-    ├── commands/                # Custom slash commands (/summon, /session-end, /learn)
-    └── settings.json            # Hooks and configuration
-```
-
-## How It Works
-
-### The Soul System
-
-Each agent has a `SOUL.md` that defines:
-- **Identity** — name, role, model tier, seniority
-- **Personality** — specific working style and approach
-- **Hard Rules** — inviolable constraints (e.g., "never assume symmetric flow")
-- **Expertise** — what the agent knows deeply
-- **Collaboration** — who to delegate to, who to defer to
-
-### The Knowledge System
-
-Agents build **cheatsheets** — compressed, actionable reference files created from studying source materials. Each cheatsheet:
-- Covers one topic (max ~500 lines)
-- Includes confidence levels: `[VERIFIED]` `[TEXTBOOK]` `[DERIVED]` `[UNCERTAIN]`
-- Has quick-reference tables, WARNING blocks, and worked EXAMPLES
-- Is indexed in `_index.md` for progressive disclosure
-
-### The Memory System
-
-Agents maintain three memory files:
-- `session-log.md` — what happened in each session
-- `mistakes.md` — errors made, root causes, and prevention rules
-- `decisions.md` — key technical decisions and their rationale
-
-### Progressive Disclosure
-
-To save context window space, agents don't load everything at startup. They:
-1. Always load: SOUL.md, mistakes.md, cheatsheets/_index.md
-2. Load on demand: individual cheatsheets relevant to the current task
-3. Never load: raw references (those get distilled into cheatsheets)
-
-## Adding a New Agent
-
-1. Copy `templates/SOUL-TEMPLATE.md` to `agents/[domain]/[agent-name]/SOUL.md`
-2. Fill in identity, rules, expertise, and collaboration fields
-3. Create `cheatsheets/_index.md` (empty index)
-4. Create `memory/session-log.md`, `mistakes.md`, `decisions.md` (from templates)
-5. Create `.claude/agents/[agent-name].md` wrapper (see existing examples)
-6. Add the agent to `ROSTER.md`
-
-## Using as Git Submodule
-
-For any project that wants to use these agents:
-
-```bash
-# Add as submodule
-git submodule add https://github.com/sezersivri/agent-souls.git .agents
 
 # Update to latest
 git submodule update --remote .agents
 ```
 
-In your project's `CLAUDE.md`:
-```markdown
-## Agent Team
-This project uses the agent-souls system. See `.agents/CLAUDE.md` for instructions.
-When a task requires specialized knowledge, summon the appropriate agent from `.agents/ROSTER.md`.
+### Contributor — Add a New Agent
+
+```bash
+git clone https://github.com/sezersivri/agentsouls.git
+cd agentsouls
+# See CONTRIBUTING.md for full instructions
+# Short version:
+# 1. Copy templates/CORE-TEMPLATE.md to agents/{domain}/{name}/CORE.md
+# 2. Add the agent to agents/manifest.json
+# 3. Run: python scripts/generate-tool-configs.py
+# 4. Run: python scripts/validate.py
 ```
+
+## Example Agents
+
+The repo ships with 2 example agents to demonstrate the system. Use them as references when creating your own.
+
+| Agent | Domain | Role | Model | Content |
+|-------|--------|------|-------|---------|
+| **Miles** | Aerospace | Aerodynamicist (Lead) | Opus | 3 cheatsheets, memory entries — fully populated example |
+| **Sam** | Software Dev | Backend Developer | Sonnet | Empty shell — shows the minimal structure |
+
+See [ROSTER.md](ROSTER.md) for details and [CONTRIBUTING.md](CONTRIBUTING.md) to add your own.
+
+## How It Works
+
+### The Core System
+
+Each agent has a `CORE.md` that defines identity, personality, hard rules, expertise, and collaboration preferences. This file is read at every session start — the agent knows who it is before doing any work.
+
+### The Knowledge System
+
+Agents build **cheatsheets** — compressed, actionable reference files created from studying source materials. Each cheatsheet covers one topic, includes confidence levels (`[VERIFIED]`, `[TEXTBOOK]`, `[DERIVED]`), and is indexed for on-demand loading. Agents don't dump full textbooks into context — they load only what's relevant.
+
+### The Memory System
+
+Three memory files per agent:
+- `session-log.md` — what happened in each session
+- `mistakes.md` — errors made, root causes, prevention rules (read at every startup)
+- `decisions.md` — key technical decisions and their rationale
+
+### Progressive Disclosure
+
+Agents always load: `CORE.md`, `mistakes.md`, `cheatsheets/_index.md`. Individual cheatsheets load on-demand based on the current task. Raw references never load — they get distilled into cheatsheets first.
+
+## Architecture
+
+```
+agentsouls/
+├── CLAUDE.md                    # Claude Code integration
+├── AGENTS.md                    # Cross-tool compatibility (Gemini, Codex)
+├── GENERAL_RULES.md             # The Constitution — rules all agents follow
+├── ROSTER.md                    # Agent directory and summoning protocol
+├── agents/
+│   ├── manifest.json            # Single source of truth for all agents
+│   └── {domain}/{agent}/
+│       ├── CORE.md              # Identity, rules, personality
+│       ├── cheatsheets/         # Distilled domain knowledge
+│       ├── references/          # Source materials
+│       └── memory/              # Session logs, mistakes, decisions
+├── shared-knowledge/            # Cross-agent shared context
+├── templates/                   # Templates for new agents/cheatsheets
+├── scripts/                     # Automation (generate, validate, index)
+├── .agents/skills/              # Cross-tool skill files (Gemini, Codex)
+├── .claude/agents/              # Native Claude Code agent wrappers
+└── .github/workflows/           # CI validation
+```
+
+## Cross-Tool Compatibility
+
+| Tool | Integration | Agent Files |
+|------|-------------|-------------|
+| **Claude Code** | Native via `.claude/agents/` | Auto-discovered, use `/summon` |
+| **Gemini CLI** | `AGENTS.md` or `contextFileName` setting | `.agents/skills/{agent}/SKILL.md` |
+| **Codex CLI** | `AGENTS.md` auto-read | `.agents/skills/{agent}/SKILL.md` |
+| **Cursor** | `.cursorrules` references | Direct `CORE.md` paths |
+
+See [AGENTS.md](AGENTS.md) for cross-tool setup details. See [GEMINI.md](GEMINI.md) for Gemini CLI-specific instructions.
 
 ## Custom Commands
 
@@ -153,12 +152,35 @@ When a task requires specialized knowledge, summon the appropriate agent from `.
 - `/session-end` — Execute the mandatory Session End Protocol
 - `/learn <source>` — Study source material and distill into cheatsheets
 
-## Cross-Tool Compatibility
+## Roadmap
 
-This system works with:
-- **Claude Code** — native integration via `.claude/agents/`
-- **Gemini CLI** — via `AGENTS.md` standard
-- **Cursor** — via `.cursorrules` referencing agent files
-- **Codex** — via `AGENTS.md` standard
+**Next milestones:**
 
-See [AGENTS.md](AGENTS.md) for cross-tool setup.
+1. **Knowledge Seeding** — Populate cheatsheets for all domain leads through real usage sessions
+2. **Community Agents** — Accept contributed agent souls from the community across new domains
+3. **v1.0 Stable** — Stabilize the manifest schema, session-end protocol, and cross-tool packaging based on community feedback
+
+## Wanted: Souls
+
+We're looking for community-contributed agents. If you have domain expertise and want to create an agent soul for it, we'd love your contribution.
+
+**Roles the community could build:**
+
+| Domain | Agent Roles Needed |
+|--------|--------------------|
+| DevOps | Kubernetes specialist, CI/CD architect, cloud infrastructure |
+| Security | Penetration tester, security auditor, threat modeler |
+| Data Science | ML engineer, data pipeline architect, visualization specialist |
+| Frontend | React/Vue specialist, accessibility expert, design system architect |
+| Backend | Database specialist, API designer, distributed systems engineer |
+| Technical Writing | Documentation specialist, API docs writer |
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to create and submit a new agent.
+
+## Requirements
+
+Python >= 3.10 (for validation and code generation scripts; no external dependencies).
+
+## License
+
+[MIT](LICENSE)
