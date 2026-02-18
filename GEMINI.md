@@ -1,6 +1,6 @@
 # Agent Souls -- Gemini CLI Integration
 
-This repository contains 18 AI agents with persistent identities, knowledge, and memory. For the full agent roster and architecture, see [README.md](README.md).
+This repository provides a persistent identity, knowledge, and memory system for AI agent teams. It ships with 2 example agents — see [ROSTER.md](ROSTER.md) for details and [docs/PRIVATE-SETUP.md](docs/PRIVATE-SETUP.md) to create your own.
 
 ## Quick Start with Gemini CLI
 
@@ -17,7 +17,7 @@ Each agent is packaged as a skill in `.agents/skills/`. To load an agent:
 
 ## Available Agents
 
-See [ROSTER.md](ROSTER.md) for the complete directory of 18 agents across 6 domains.
+See [ROSTER.md](ROSTER.md) for the available example agents.
 
 ## Bootstrap Script
 

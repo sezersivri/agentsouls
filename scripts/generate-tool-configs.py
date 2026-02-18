@@ -6,8 +6,8 @@ Usage:
     python generate-tool-configs.py --check  # Verify committed files match (exits non-zero on drift)
 
 AUTO-GENERATED files produced:
-    .claude/agents/{slug}.md   — Claude Code agent wrappers (18 files)
-    .agents/skills/{slug}/SKILL.md — Cross-tool skill files (18 files)
+    .claude/agents/{slug}.md   — Claude Code agent wrappers
+    .agents/skills/{slug}/SKILL.md — Cross-tool skill files
 
 Requirements: Python 3.10+, no external dependencies.
 """

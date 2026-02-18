@@ -31,6 +31,8 @@ extract_frontmatter_field() {
     local in_frontmatter=false
     local found_start=false
     while IFS= read -r line; do
+        # Strip trailing CR for Windows/CRLF compatibility
+        line="${line%$'\r'}"
         if [[ "$line" == "---" ]]; then
             if $found_start; then
                 # End of frontmatter
@@ -59,6 +61,8 @@ has_frontmatter() {
     local file="$1"
     local first_line
     first_line="$(head -n 1 "$file")"
+    # Strip trailing CR for Windows/CRLF compatibility
+    first_line="${first_line%$'\r'}"
     [[ "$first_line" == "---" ]]
 }
 

@@ -98,7 +98,7 @@ if ($Format -eq "text") {
     Write-Output $GeneralRules
     Write-Output ""
     Write-Output "=== CORE ==="
-    Write-Output $Soul
+    Write-Output $Core
     Write-Output ""
     Write-Output "=== MISTAKES ==="
     Write-Output $Mistakes

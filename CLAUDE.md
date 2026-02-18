@@ -61,7 +61,7 @@ Agent definitions are in `.agents/.claude/agents/`.
 
 ## Model Configuration
 
-Model assignments are in each agent's `.claude/agents/*.md` YAML frontmatter. To update models for new releases, edit the `model:` field in each agent wrapper file.
+Model assignments come from `agents/manifest.json`. To update models, edit the `model` field for the agent in the manifest, then run `python scripts/generate-tool-configs.py` to regenerate the wrapper files.
 
 Current tier mapping:
 - `opus` → Complex analysis, architecture, lead decisions
