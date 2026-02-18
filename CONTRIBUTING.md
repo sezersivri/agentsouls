@@ -1,6 +1,20 @@
 # Contributing to Agent Souls
 
-This guide covers how to add agents, write cheatsheets, extend cross-tool support, and maintain the repository.
+This guide covers how to improve the framework, write cheatsheets, extend cross-tool support, and maintain the repository.
+
+## What We Accept
+
+Agent Souls is an open-source **framework**. Contributions that improve the framework for everyone are welcome:
+
+- Bug fixes in scripts (`validate.py`, `generate-tool-configs.py`, `update-indexes.sh`)
+- New tool integrations (Cursor, Windsurf, etc.)
+- Template improvements
+- Documentation improvements
+- Suggestions via GitHub Issues
+
+## What We Don't Accept
+
+**New agents.** Agents are personal — they should reflect your workflow, your conventions, and your domain expertise. Create them in your [private fork](docs/PRIVATE-SETUP.md), not as a PR to this repo.
 
 ## Requirements
 
@@ -21,7 +35,9 @@ To change these files, edit `agents/manifest.json` (or the templates in `scripts
 python scripts/generate-tool-configs.py
 ```
 
-## Adding a New Agent
+## Creating Agents (For Your Private Fork)
+
+The steps below are for creating agents in **your own private repo**, not for PRs to this repository.
 
 ### Step 1: Create the CORE.md
 
@@ -251,10 +267,5 @@ Never manually edit generated files to fix a broken state. Always fix the source
 - [ ] `python scripts/validate.py` passes with all checks green
 - [ ] Generated files are in sync (`python scripts/generate-tool-configs.py --check` exits 0)
 - [ ] Index files are accurate (`bash scripts/update-indexes.sh --check` exits 0)
-- [ ] If adding a new agent: ROSTER.md is updated
 - [ ] If changing schema_version: migration instructions provided
 - [ ] Commit messages follow the format: `[agent-name] [action]: [description]`
-
-### CI
-
-The GitHub Actions workflow (`.github/workflows/validate.yml`) runs all three checks automatically on push to `main` and on pull requests.

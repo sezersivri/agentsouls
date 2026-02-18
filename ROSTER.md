@@ -22,9 +22,9 @@ When summoning an agent, the following sequence is automatic:
 
 Miles is a fully populated example with cheatsheets and memory entries. Sam is a minimal shell showing the basic structure.
 
-## Adding Your Own Agents
+## Creating Your Own Agents
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for step-by-step instructions on creating a new agent.
+To create agents for your workflow, set up a private fork and follow the step-by-step guide in [docs/PRIVATE-SETUP.md](docs/PRIVATE-SETUP.md). For the technical reference on agent creation (templates, manifest schema, validation), see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Stats
 

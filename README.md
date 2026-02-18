@@ -27,7 +27,9 @@ No databases. No runtimes. Just files you can read, version, and control.
 
 ## Quickstart
 
-### Solo Developer — Try It Now
+### Try the Examples
+
+Clone the repo and try the included example agents (Miles and Sam) to see how the system works.
 
 **Claude Code:**
 ```bash
@@ -54,7 +56,20 @@ codex  # Reads AGENTS.md automatically
 # Say: "Use the Sam agent skill at .agents/skills/sam/SKILL.md for backend work"
 ```
 
-### Team Lead — Add to Your Project
+### Create Your Own Agents
+
+Once you've seen how the examples work, create agents tailored to your workflow:
+
+1. Fork this repo and make it private (see [Private Setup Guide](docs/PRIVATE-SETUP.md))
+2. Delete the example agents (Miles, Sam)
+3. Copy `templates/CORE-TEMPLATE.md` to `agents/{domain}/{name}/CORE.md`
+4. Fill in your agent's identity, expertise, and rules
+5. Add the agent to `agents/manifest.json`
+6. Run `python scripts/generate-tool-configs.py` and `python scripts/validate.py`
+
+See [docs/PRIVATE-SETUP.md](docs/PRIVATE-SETUP.md) for the full step-by-step guide.
+
+### Add to Your Project
 
 ```bash
 # Add as a git submodule
@@ -67,18 +82,18 @@ git submodule add https://github.com/sezersivri/agentsouls.git .agents
 git submodule update --remote .agents
 ```
 
-### Contributor — Add a New Agent
+## Use It Privately
 
-```bash
-git clone https://github.com/sezersivri/agentsouls.git
-cd agentsouls
-# See CONTRIBUTING.md for full instructions
-# Short version:
-# 1. Copy templates/CORE-TEMPLATE.md to agents/{domain}/{name}/CORE.md
-# 2. Add the agent to agents/manifest.json
-# 3. Run: python scripts/generate-tool-configs.py
-# 4. Run: python scripts/validate.py
-```
+**Agents are personal.** The value of Agent Souls comes from agents that know *your* conventions, *your* project, and *your* past mistakes. This repo provides the framework and examples — the agents you create should live in your own private repository.
+
+Two setup paths:
+
+| Path | Best for | Upstream updates? |
+|------|----------|-------------------|
+| **Private Fork** | Most users | Yes — pull from upstream |
+| **Template Clone** | Full independence | No — you own everything |
+
+See [docs/PRIVATE-SETUP.md](docs/PRIVATE-SETUP.md) for detailed instructions on both paths.
 
 ## Example Agents
 
@@ -89,7 +104,7 @@ The repo ships with 2 example agents to demonstrate the system. Use them as refe
 | **Miles** | Aerospace | Aerodynamicist (Lead) | Opus | 3 cheatsheets, memory entries — fully populated example |
 | **Sam** | Software Dev | Backend Developer | Sonnet | Empty shell — shows the minimal structure |
 
-See [ROSTER.md](ROSTER.md) for details and [CONTRIBUTING.md](CONTRIBUTING.md) to add your own.
+See [ROSTER.md](ROSTER.md) for details.
 
 ## How It Works
 
@@ -152,30 +167,27 @@ See [AGENTS.md](AGENTS.md) for cross-tool setup details. See [GEMINI.md](GEMINI.
 - `/session-end` — Execute the mandatory Session End Protocol
 - `/learn <source>` — Study source material and distill into cheatsheets
 
+## Contributing
+
+Agent Souls is an open-source framework. Contributions that improve the framework are welcome:
+
+- Bug fixes in scripts (`validate.py`, `generate-tool-configs.py`)
+- New tool integrations (Cursor, Windsurf, etc.)
+- Template improvements
+- Documentation improvements
+- Suggestions and feature requests via [GitHub Issues](https://github.com/sezersivri/agentsouls/issues)
+
+**Not accepted:** New agents. Agents are personal — create them in your [private fork](docs/PRIVATE-SETUP.md).
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
 ## Roadmap
 
 **Next milestones:**
 
-1. **Knowledge Seeding** — Populate cheatsheets for all domain leads through real usage sessions
-2. **Community Agents** — Accept contributed agent souls from the community across new domains
-3. **v1.0 Stable** — Stabilize the manifest schema, session-end protocol, and cross-tool packaging based on community feedback
-
-## Wanted: Souls
-
-We're looking for community-contributed agents. If you have domain expertise and want to create an agent soul for it, we'd love your contribution.
-
-**Roles the community could build:**
-
-| Domain | Agent Roles Needed |
-|--------|--------------------|
-| DevOps | Kubernetes specialist, CI/CD architect, cloud infrastructure |
-| Security | Penetration tester, security auditor, threat modeler |
-| Data Science | ML engineer, data pipeline architect, visualization specialist |
-| Frontend | React/Vue specialist, accessibility expert, design system architect |
-| Backend | Database specialist, API designer, distributed systems engineer |
-| Technical Writing | Documentation specialist, API docs writer |
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to create and submit a new agent.
+1. **Knowledge Seeding** — Populate cheatsheets for example agents through real usage sessions
+2. **Multi-repo Support** — Submodule overlay system for using agents across multiple projects
+3. **v1.0 Stable** — Stabilize the manifest schema, session-end protocol, and cross-tool packaging based on feedback
 
 ## Requirements
 
