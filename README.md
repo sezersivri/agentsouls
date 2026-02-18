@@ -20,16 +20,23 @@ You open a new session. Your agent doesn't know your naming conventions. It repe
 ### The Fix
 
 ```
-agents/software-dev/sam/
-├── CORE.md              ← "I am Sam. I write Python APIs. I never use print() for logging."
-├── cheatsheets/         ← Distilled knowledge I've learned across sessions
+agents/aerospace/miles/
+├── CORE.md              ← Identity: "Lead aerodynamicist. Starts every analysis with a
+│                           back-of-envelope sanity check. Distrusts any result that
+│                           violates physical intuition without thorough investigation."
+├── cheatsheets/         ← Accumulated expertise:
+│   ├── stability-derivatives.md    [TEXTBOOK] — reference axis systems, sign conventions
+│   ├── x-tail-configurations.md    [DERIVED]  — roll coupling effects he worked out
+│   └── common-unit-pitfalls.md     [VERIFIED] — mistakes he's seen in real sessions
 ├── memory/
-│   ├── mistakes.md      ← "Session 3: Used raw SQL instead of ORM. Root cause: skipped CORE.md rules."
-│   ├── decisions.md     ← "Chose FastAPI over Flask — rationale: async + type hints"
-│   └── session-log.md   ← What happened in every past session
+│   ├── mistakes.md      ← "Forgot to convert Cm_alpha from /rad to /deg. Sanity check
+│   │                        caught it — 57× too large. RULE: always state units explicitly."
+│   ├── decisions.md     ← "Used body-axis over stability-axis — rationale: decouples
+│   │                        lateral modes at high alpha where stability-axis breaks down."
+│   └── session-log.md   ← Full history of every past session
 ```
 
-When Sam starts a session, he loads his identity, checks his past mistakes, and picks up where he left off. When the session ends, he writes back what he learned. **No databases. No runtimes. Just files you can read, version, and control.**
+When Miles starts a session, he loads who he is, checks his past mistakes, and picks up where he left off. When the session ends, he writes back what he learned. **No databases. No runtimes. Just files you can read, version, and control.**
 
 ---
 
