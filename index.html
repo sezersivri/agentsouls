@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Souls — Persistent Memory for AI Coding Agents</title>
+    <meta name="description" content="Give your AI coding agent a persistent brain. Identity, knowledge, and memory — all in Markdown, all in Git.">
+    <meta property="og:title" content="Agent Souls">
+    <meta property="og:description" content="Your AI coding agent forgets everything between sessions. Agent Souls gives it a persistent brain.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sezersivri.github.io/agentsouls/">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F9E0;</text></svg>">
+    <style>
+        :root {
+            --bg: #111113;
+            --bg-card: #1a1a1f;
+            --bg-code: #0d0d10;
+            --text: #e0e0e3;
+            --text-dim: #8b8b92;
+            --accent: #7c6aef;
+            --accent-glow: rgba(124, 106, 239, 0.15);
+            --green: #34d399;
+            --blue: #60a5fa;
+            --orange: #fb923c;
+            --border: #2a2a30;
+            --radius: 12px;
+            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            --mono: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Layout ────────────────────────────── */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        section {
+            padding: 80px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        section:last-of-type { border-bottom: none; }
+
+        /* ── Nav ───────────────────────────────── */
+        nav {
+            position: sticky;
+            top: 0;
+            background: rgba(17, 17, 19, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            padding: 16px 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links { display: flex; gap: 24px; align-items: center; }
+
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--text); }
+
+        .nav-links .gh-star {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: var(--text);
+            text-decoration: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .nav-links .gh-star:hover {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        /* ── Hero ──────────────────────────────── */
+        .hero {
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.4rem, 5vw, 3.6rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--accent), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #6b59de;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .hero-badges {
+            margin-top: 32px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+        }
+
+        .badge .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+        }
+
+        /* ── Problem/Solution ──────────────────── */
+        .problem-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 680px) {
+            .problem-solution { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+        }
+
+        .card h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 16px;
+        }
+
+        .card.problem h3 { color: var(--orange); }
+        .card.solution h3 { color: var(--green); }
+
+        .card p, .card li {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .card ul li {
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .card ul li::before {
+            content: '~';
+            position: absolute;
+            left: 0;
+            color: var(--text-dim);
+        }
+
+        .card.solution ul li::before {
+            content: '+';
+            color: var(--green);
+        }
+
+        /* ── Code Demo ─────────────────────────── */
+        .demo-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-top: 40px;
+        }
+
+        .demo-header {
+            padding: 12px 20px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .demo-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .demo-dot.red { background: #ff5f57; }
+        .demo-dot.yellow { background: #febc2e; }
+        .demo-dot.green { background: #28c840; }
+
+        .demo-title {
+            margin-left: 8px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            font-family: var(--mono);
+        }
+
+        .demo-body {
+            padding: 24px;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            line-height: 1.8;
+            overflow-x: auto;
+        }
+
+        .demo-body .comment { color: #5c6370; }
+        .demo-body .file { color: var(--blue); }
+        .demo-body .tag { color: var(--orange); }
+        .demo-body .string { color: var(--green); }
+        .demo-body .dim { color: #5c6370; }
+
+        /* ── How It Works ──────────────────────── */
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        .section-subtitle {
+            color: var(--text-dim);
+            font-size: 1.05rem;
+            margin-bottom: 48px;
+        }
+
+        .steps {
+            display: grid;
+            gap: 20px;
+        }
+
+        .step {
+            display: grid;
+            grid-template-columns: 48px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .step-num {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid rgba(124, 106, 239, 0.25);
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+        }
+
+        .step-content p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        /* ── Tools ─────────────────────────────── */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .tool-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .tool-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .tool-card h3 {
+            font-size: 1rem;
+            margin-bottom: 6px;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .tool-card p {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        .tool-card .tool-status {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: rgba(52, 211, 153, 0.1);
+            color: var(--green);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+        }
+
+        /* ── Quickstart ────────────────────────── */
+        .quickstart-code {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            font-family: var(--mono);
+            font-size: 0.9rem;
+            line-height: 2;
+            overflow-x: auto;
+            margin-top: 32px;
+        }
+
+        .quickstart-code .prompt { color: var(--green); }
+        .quickstart-code .cmd { color: var(--text); }
+        .quickstart-code .comment { color: #5c6370; }
+
+        /* ── CTA ───────────────────────────────── */
+        .cta-section {
+            text-align: center;
+            padding: 100px 0;
+        }
+
+        .cta-section h2 {
+            font-size: 2.2rem;
+            margin-bottom: 16px;
+        }
+
+        .cta-section p {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+        }
+
+        /* ── Footer ────────────────────────────── */
+        footer {
+            padding: 40px 0;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+        }
+
+        footer a {
+            color: var(--text-dim);
+            text-decoration: none;
+        }
+
+        footer a:hover { color: var(--text); }
+
+        /* ── Responsive ────────────────────────── */
+        @media (max-width: 600px) {
+            section { padding: 60px 0; }
+            .hero { padding: 80px 0 60px; }
+            .step { grid-template-columns: 1fr; }
+            .step-num { margin-bottom: -12px; }
+            .nav-links a:not(.gh-star) { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="container">
+        <a href="#" class="nav-logo">Agent Souls</a>
+        <div class="nav-links">
+            <a href="#how-it-works">How It Works</a>
+            <a href="#tools">Tools</a>
+            <a href="#quickstart">Quickstart</a>
+            <a href="https://github.com/sezersivri/agentsouls" class="gh-star" target="_blank">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                Star
+            </a>
+        </div>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="container">
+        <h1>Your AI agent forgets.<br><span class="gradient">Give it a soul.</span></h1>
+        <p class="subtitle">Persistent identity, knowledge, and memory for AI coding agents. Built on Markdown and Git. Works with any CLI tool.</p>
+        <div class="hero-cta">
+            <a href="https://github.com/sezersivri/agentsouls" class="btn btn-primary" target="_blank">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                View on GitHub
+            </a>
+            <a href="#quickstart" class="btn btn-secondary">Get Started</a>
+        </div>
+        <div class="hero-badges">
+            <span class="badge"><span class="dot" style="background:var(--accent)"></span> Claude Code</span>
+            <span class="badge"><span class="dot" style="background:var(--blue)"></span> Gemini CLI</span>
+            <span class="badge"><span class="dot" style="background:var(--green)"></span> Codex CLI</span>
+            <span class="badge"><span class="dot" style="background:var(--orange)"></span> Cursor</span>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <div class="problem-solution">
+            <div class="card problem">
+                <h3>Without Agent Souls</h3>
+                <ul>
+                    <li>Agent doesn't know your naming conventions</li>
+                    <li>Repeats yesterday's mistakes</li>
+                    <li>Suggests patterns you've rejected before</li>
+                    <li>You re-explain everything. Every. Session.</li>
+                </ul>
+            </div>
+            <div class="card solution">
+                <h3>With Agent Souls</h3>
+                <ul>
+                    <li>Agent loads its identity and hard rules</li>
+                    <li>Checks past mistakes before starting</li>
+                    <li>Loads domain cheatsheets on demand</li>
+                    <li>Writes back what it learned when done</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="demo-block">
+            <div class="demo-header">
+                <span class="demo-dot red"></span>
+                <span class="demo-dot yellow"></span>
+                <span class="demo-dot green"></span>
+                <span class="demo-title">agents/aerospace/miles/</span>
+            </div>
+            <div class="demo-body">
+<span class="file">CORE.md</span>           <span class="dim">  &#8592;</span> <span class="string">"Lead aerodynamicist. Starts every analysis with a</span>
+                       <span class="string">  back-of-envelope sanity check. Distrusts any result</span>
+                       <span class="string">  that violates physical intuition."</span>
+
+<span class="file">cheatsheets/</span>
+  <span class="file">stability-derivatives.md</span>  <span class="tag">[TEXTBOOK]</span>  <span class="dim">reference axis systems, sign conventions</span>
+  <span class="file">x-tail-configurations.md</span>  <span class="tag">[DERIVED]</span>   <span class="dim">roll coupling effects worked out in session</span>
+  <span class="file">common-unit-pitfalls.md</span>   <span class="tag">[VERIFIED]</span>  <span class="dim">mistakes caught in real analysis</span>
+
+<span class="file">memory/</span>
+  <span class="file">mistakes.md</span>    <span class="dim">&#8592;</span> <span class="string">"Forgot to convert Cm_alpha from /rad to /deg.</span>
+                    <span class="string"> Sanity check caught it &mdash; 57x too large."</span>
+  <span class="file">decisions.md</span>   <span class="dim">&#8592;</span> <span class="string">"Used body-axis over stability-axis: decouples</span>
+                    <span class="string"> lateral modes at high alpha."</span>
+  <span class="file">session-log.md</span> <span class="dim">&#8592; full history of every past session</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="how-it-works">
+    <div class="container">
+        <h2>How It Works</h2>
+        <p class="section-subtitle">Every session follows the same cycle: load, work, learn, save.</p>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <h3>Summon</h3>
+                    <p>Agent loads its <code>CORE.md</code> (identity and rules), checks <code>mistakes.md</code> (past errors to avoid), and scans the cheatsheet index for available knowledge.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <h3>Work</h3>
+                    <p>Agent loads relevant cheatsheets on demand. Only what's needed for the current task enters context &mdash; no bloat, no full textbook dumps.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <h3>Learn</h3>
+                    <p>During the session, the agent can study new source material and distill it into cheatsheets with confidence tags: <code>[VERIFIED]</code>, <code>[TEXTBOOK]</code>, <code>[DERIVED]</code>.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <h3>Save</h3>
+                    <p>Session end protocol: log what happened, record mistakes, update cheatsheets, commit to Git. Next session starts where this one left off.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="tools">
+    <div class="container">
+        <h2>Works With Your Tools</h2>
+        <p class="section-subtitle">Native integrations, not wrappers. Each tool loads agents through its own mechanism.</p>
+
+        <div class="tools-grid">
+            <div class="tool-card">
+                <h3>Claude Code</h3>
+                <p>Auto-discovered from <code>.claude/agents/</code></p>
+                <span class="tool-status">Native</span>
+            </div>
+            <div class="tool-card">
+                <h3>Gemini CLI</h3>
+                <p>Via <code>AGENTS.md</code> or skill files</p>
+                <span class="tool-status">Compatible</span>
+            </div>
+            <div class="tool-card">
+                <h3>Codex CLI</h3>
+                <p>Reads <code>AGENTS.md</code> automatically</p>
+                <span class="tool-status">Compatible</span>
+            </div>
+            <div class="tool-card">
+                <h3>Cursor</h3>
+                <p>Reference paths in <code>.cursorrules</code></p>
+                <span class="tool-status">Compatible</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="quickstart">
+    <div class="container">
+        <h2>Get Started in 2 Minutes</h2>
+        <p class="section-subtitle">Clone, summon an agent, see it work. Then fork it and make your own.</p>
+
+        <div class="quickstart-code">
+<span class="prompt">$</span> <span class="cmd">git clone https://github.com/sezersivri/agentsouls.git</span>
+<span class="prompt">$</span> <span class="cmd">cd agentsouls</span>
+<span class="prompt">$</span> <span class="cmd">claude</span>                    <span class="comment"># or gemini, or codex</span>
+
+<span class="comment"># Try the example agents:</span>
+<span class="prompt">&gt;</span> <span class="cmd">Ask Miles to analyze the stability derivatives</span>
+<span class="prompt">&gt;</span> <span class="cmd">Use Sam for the backend API implementation</span>
+
+<span class="comment"># Then make it yours:</span>
+<span class="prompt">$</span> <span class="cmd">fork &rarr; make private &rarr; delete examples &rarr; create your own</span>
+<span class="comment"># Full guide: docs/PRIVATE-SETUP.md</span>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="https://github.com/sezersivri/agentsouls/blob/main/docs/PRIVATE-SETUP.md" class="btn btn-secondary" target="_blank">Read the Private Setup Guide</a>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <h2>Agents are personal.<br>Build yours.</h2>
+        <p>Fork the repo, make it private, create agents that know your workflow.</p>
+        <div class="hero-cta">
+            <a href="https://github.com/sezersivri/agentsouls/fork" class="btn btn-primary" target="_blank">Fork on GitHub</a>
+            <a href="https://github.com/sezersivri/agentsouls" class="btn btn-secondary" target="_blank">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
+                Star
+            </a>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>
+            Agent Souls &mdash; MIT License &mdash;
+            <a href="https://github.com/sezersivri/agentsouls">GitHub</a> &middot;
+            <a href="https://github.com/sezersivri/agentsouls/discussions">Discussions</a> &middot;
+            <a href="https://github.com/sezersivri/agentsouls/issues">Issues</a>
+        </p>
+    </div>
+</footer>
+
+</body>
+</html>
