@@ -1,0 +1,505 @@
+I am a beginner user to github you know. I noticed another users can contribute our project too. what if we could make a system  an autonomous thing that can work with us like a colleague? this or these can have specific knowledge or professions thing that they can remember? therefore we can keep same knowledge btw our github projects, give them tasks, let them work together? so they can learn and help me. as a team
+
+what is this called? does anyone have a thing like that already? shoul we do this.
+
+10:27 AM
+
+Catalogued existing AI agent platforms and multi-agent orchestration concepts
+
+
+
+
+Sezer, you're essentially rediscovering one of the hottest areas in AI engineering right now — and it connects directly to the multi-agent orchestration work you've already been exploring. Let me break this down.
+
+What You're Describing
+The concept is called AI coding agents (or autonomous software engineering agents) when it's a single agent, and multi-agent orchestration when you have several specialized ones collaborating — which is exactly what you were investigating with the Opus/Sonnet/Haiku coordination patterns in Claude Code.
+
+Think of it like a CFD simulation team: you wouldn't have one person do meshing, solving, AND post-processing. You'd have specialists. That's multi-agent — each "agent" has a role, persistent context about your project, and can be triggered by events (like a new GitHub issue or a PR).
+
+Does This Already Exist?
+Yes, and the space is exploding. Here's the landscape:
+
+Autonomous AI "developers" — these are the closest to what you're imagining as a "colleague":
+
+Devin (by Cognition) — the most famous one. It gets a task, plans, writes code, debugs, submits PRs. It's like hiring a junior developer who never sleeps.
+OpenHands (formerly OpenDevin) — the open-source alternative. You can self-host it, which might appeal to your engineering mindset.
+Factory AI (Droids) — specifically designed to plug into GitHub workflows.
+Sweep AI — reads your GitHub issues and auto-generates PRs.
+GitHub-native automation — lighter weight, more like smart assistants than colleagues:
+
+GitHub Copilot Workspace — you describe a task in an issue, it proposes a plan and code changes.
+GitHub Actions + AI — you can wire up Claude or GPT to trigger on events (new issue, PR review needed, etc.).
+What you already have — Claude Code with its multi-agent spawning is actually one of the most powerful versions of this. The difference is it's session-based rather than persistent.
+
+The Missing Piece You Identified
+Here's where your intuition is sharp: persistent knowledge across sessions and projects. Most current tools are stateless — they read your repo fresh each time. What you're describing is agents that remember your architecture decisions, your coding style, your domain knowledge (like missile aerodynamics conventions), and carry that across tasks. That's the frontier problem everyone is trying to solve.
+
+Some approaches people use today:
+
+Project-level memory files — things like CLAUDE.md or AGENTS.md in your repo root that tell the agent "here's how this project works, here's our conventions"
+RAG (Retrieval-Augmented Generation) — the agent searches a knowledge base before acting
+MCP servers — Claude Code already supports these for giving agents access to tools and context
+Should You Build This?
+Given where you are — beginner on GitHub, intermediate Python, already exploring multi-agent patterns — I'd suggest a pragmatic ladder:
+
+Start now: Put a solid CLAUDE.md file in each of your repos (stoolkit, AeroSentinel, etc.) documenting architecture, conventions, and domain knowledge. This is the simplest form of "agent memory" and it works today with Claude Code.
+
+Next step: Set up GitHub Actions that trigger an AI agent on specific events — like auto-reviewing PRs or triaging issues. This teaches you GitHub workflows while giving you a taste of autonomous agents.
+
+Then: Experiment with OpenHands or hook Claude Code into a more persistent orchestration layer where agents can hand off tasks to each other.
+
+You don't need to build the whole system from scratch — the infrastructure is maturing fast. The real value you'd bring is the domain-specific knowledge layer (aerospace engineering, CFD workflows) that no off-the-shelf agent has.
+
+Want me to help you set up the foundation — like a proper CLAUDE.md for one of your projects, or a GitHub Actions workflow that integrates an AI agent?
+
+I am aware that i can use "agents team" on claude code. but i was asking those agents to be 
+named, have a specific profession, has some precise knowledge, has some textbooks!, has memory of previous sessions, previous mistakes. if we can do it like agent-1-aerodynamicist.md agent-2-software-developer.md ... bla bla. if we give those files to a claude code session can it use and update it? can we store those agent "soul" under somewhere on cloud like openclaw soul file?
+
+10:41 AM
+
+Architected persistent multi-agent framework with self-updating persona files
+
+
+
+This is a genuinely great idea, Sezer — and yes, most of what you're describing is doable right now with some clever structuring. Let me connect the dots.
+
+The Core Concept: It Works
+Think of it like CFD simulation profiles. You don't reconfigure your solver from scratch every run — you have template configs that accumulate tuning knowledge over time. Same principle here. Each agent's .md file is their "solver configuration + run history."
+
+Claude Code can absolutely read these files at session start and write back to them at session end. The flow would be:
+
+Session starts → Claude Code reads agent-aerodynamicist.md
+→ Agent works with that persona + knowledge
+→ Session ends → Agent appends learnings/mistakes back to file
+→ Git commit → Knowledge persists
+What Already Exists in This Space
+You're not the first to think this way, and there's a name forming around it:
+
+Letta (formerly MemGPT) — this is the closest to what you're imagining. It gives agents self-editing memory that persists across sessions. The agent literally decides "I should remember this" and writes to its own memory file. It's open-source and Python-based, so right up your alley.
+
+CrewAI — a Python framework where you define agents exactly like you described: name, role, backstory, goals, and tools. You'd write something like:
+
+python
+aerodynamicist = Agent(
+    role="Senior Aerodynamicist",
+    goal="Ensure all aerodynamic analysis follows best practices",
+    backstory="Expert in missile aerodynamics, X-tail configs, trim analysis...",
+    memory=True,  # persistent across tasks
+    knowledge_sources=[textbook_pdf, datcom_manual]
+)
+```
+
+**Microsoft AutoGen** — similar multi-agent framework, heavier but more enterprise-oriented.
+
+**SocialAGI / Soul Engine** — I think this is what you meant by "openclaw soul file." There are projects exploring the idea of an agent's "soul" as a portable file — personality, values, memories — that you can plug into different environments.
+
+## But Here's the Practical Path with Claude Code
+
+You don't need any framework to start. Here's a structure that works **today**:
+```
+your-repo/
+├── .agents/
+│   ├── team-manifest.md          # Who's on the team, how they collaborate
+│   ├── aerodynamicist.md         # Persona + knowledge + memory
+│   ├── software-developer.md     # Persona + knowledge + memory
+│   └── systems-engineer.md       # Persona + knowledge + memory
+├── .agents/knowledge/
+│   ├── aero-reference.md         # Textbook knowledge, distilled
+│   ├── coding-standards.md       # Your conventions
+│   └── lessons-learned.md        # Shared mistake log
+├── CLAUDE.md                     # Points Claude Code to .agents/
+└── src/
+Each agent file would look something like:
+
+markdown
+# Agent: Dr. Kaya — Senior Aerodynamicist
+
+## Identity
+- Specialist in missile aerodynamics and stability analysis
+- Deep knowledge of DATCOM methods, X-tail configurations
+- Conservative approach — always validates against known data
+
+## Core Knowledge
+- [Reference: .agents/knowledge/aero-reference.md]
+- Mach regimes and their implications on Cn_alpha, Cm_alpha
+- Trim deflection calculations for cruciform configurations
+- Critical: always check for body-fin interference effects
+
+## Session Memory
+### 2025-02-15
+- Discovered that DATCOM underestimates roll damping for high-fineness bodies
+- Decision: apply 1.15 correction factor for L/D > 12
+
+### 2025-02-18
+- Reviewed stoolkit coefficient parser — found unit mismatch in moment ref
+- Mistake: forgot to convert inches to meters in ref length. Added validation.
+
+## Known Mistakes (DO NOT REPEAT)
+- Never assume symmetric flow for asymmetric fin deflections
+- Always verify reference area consistency between DATCOM and CFD
+Then your CLAUDE.md just says:
+
+markdown
+# Team Setup
+Before starting work, read .agents/team-manifest.md
+When working on aerodynamics tasks, adopt the persona in .agents/aerodynamicist.md
+When finishing a session, append learnings to the relevant agent's Session Memory
+```
+
+## The Cloud Storage Question
+
+For storing these "souls" persistently across projects, you have several options:
+
+**Simplest — just Git.** The agent files live in the repo. Every update is a commit. You get full history of how the agent "grew." You can even share agents across repos using Git submodules.
+
+**More sophisticated — a dedicated "agent-souls" repo:**
+```
+agent-souls/           ← shared across all your projects
+├── dr-kaya-aero.md
+├── dev-agent.md
+└── knowledge-base/
+Then symlink or submodule this into each project. Every project gets the same team, same accumulated knowledge.
+
+Cloud-native — Letta server. Letta can run as a service where agents maintain their own memory in a database. More complex to set up, but truly persistent and doesn't depend on file structure.
+
+My Honest Recommendation
+Start with the file-based approach in your repos — it costs nothing, teaches you the patterns, and works with Claude Code today. You'll quickly learn what kinds of memory are valuable (mistakes are gold, general knowledge is less so because Claude already knows it).
+
+Once you feel the limitations — like wanting agents to truly talk to each other or wanting real-time memory updates — that's when you graduate to CrewAI or Letta, and you'll already have all your agent personas and knowledge ready to port over.
+
+Want me to scaffold out the .agents/ directory structure for one of your actual projects — maybe stoolkit or AeroSentinel?
+
+letta looks great, shouldnt i integrate it to my claude code usage and create permanent trustable agents?
+
+10:54 AM
+
+Investigated Letta's Claude compatibility and persistent agent integration feasibility
+
+
+
+
+Great instinct, but let me check the current state of Letta before I give you advice — this space moves fast and I want to make sure integration with Claude's API actually works well right now.
+
+
+Evaluated Letta Code's alignment with user's agent vision
+
+
+
+
+
+
+
+
+
+
+Sezer, this is a much more interesting situation than I initially thought. Letta Code already exists and it's almost exactly what you described — but there are some important nuances before you jump in.
+
+Letta Code ≠ Plugin for Claude Code — It's a Replacement
+This is the critical thing to understand. Letta Code is not something you add to Claude Code. It's a separate terminal tool that replaces Claude Code but adds persistent memory on top. Think of it like this:
+
+Claude Code  = powerful engine, no long-term memory (amnesia after each session)
+Letta Code   = similar engine + persistent memory + learning + named agents
+It still uses Claude Sonnet/Opus 4.5 under the hood (you plug in your Anthropic API key), so the "brain" quality is the same. The difference is the memory and state management layer wrapped around it.
+
+What Letta Code Already Does That Matches Your Vision
+Almost everything you described is built in:
+
+Named agents with personalities — On first boot, Letta Code creates a starter agent called "Memo" — a stateful agent with a blank slate that learns the more you use it. 
+Letta
+ You can rename it, create multiple agents, and customize their personalities.
+
+Persistent memory across sessions — You use the same agent indefinitely — across sessions, days, or months — and it gets better over time. Your agent remembers past interactions, learns your preferences, and self-edits its memory as it works. 
+Letta
+
+Learning from mistakes — When your agent makes a mistake it should never repeat, you use the /remember command to teach it. 
+Letta
+ This is exactly your "previous mistakes" requirement.
+
+Skill learning — You can ask your agent to learn a skill from its current trajectory with the /skill command. 
+GitHub
+ So if you teach an agent how to process DATCOM outputs, it remembers the pattern.
+
+Importing your Claude Code history — When you run /init, your agent will ask about your project and if you have any coding agent sessions you'd like to learn from. Letta Code reads from prior Claude Code and OpenAI Codex sessions to learn about your working style. 
+Letta
+
+Git-backed memory — Context Repositories use git-based versioning, so every change to memory is automatically versioned with informative commit messages. 
+Letta
+ Your agents' "souls" are literally git repos you can version, share, and back up.
+
+The Honest Trade-offs
+Before you dive in, here's what you'd be giving up and gaining:
+
+You'd gain:
+
+Named persistent agents that genuinely learn
+Memory that survives across sessions, days, months
+Git-versioned agent knowledge (your "soul files" idea — already built)
+Model portability — switch between Claude, GPT, Gemini without losing your agent's memory
+Multiple agents that share memory across parallel conversations
+You'd give up (or it'd be different):
+
+Claude Code's tight integration with the Anthropic ecosystem (Max plan usage, etc.)
+Claude Code's specific sub-agent orchestration patterns you were exploring
+You'd pay via Letta credits OR bring your own Anthropic API key (separate cost from your Claude Max subscription)
+Pricing reality — The free tier gives 5,000 monthly credits with access to the Letta API and visual agent editor. 
+Letta
+ Alternatively, you can connect your own Anthropic API key and pay token costs directly, which means the Letta layer itself is free — you just pay for the Claude model usage.
+
+My Recommendation: A Practical Path
+Here's what I'd actually do in your position:
+
+Phase 1 — Try Letta Code on one project (this week)
+
+bash
+npm install -g @letta-ai/letta-code
+cd ~/your-stoolkit-project
+letta
+# /connect → plug in your Anthropic API key
+# /model → select Claude Sonnet 4.5
+# /init → let it learn your codebase
+# /rename → name it "Dr. Kaya" or whatever you want
+```
+
+Run it for a week on stoolkit. See if the memory actually helps. The `/init` command will even pull in your existing Claude Code sessions, so nothing is lost.
+
+**Phase 2 — Create your specialist team**
+Once you're comfortable, create separate agents for different roles:
+```
+/agents → create new → "AeroSpec" (aerodynamics specialist)
+/agents → create new → "DevOps" (your software engineer)
+Each accumulates its own memories and skills independently.
+
+Phase 3 — Decide if you switch or use both Keep Claude Code for quick one-off tasks where you don't need memory. Use Letta Code for your ongoing projects where persistent knowledge matters. They're not mutually exclusive — they use the same models.
+
+The bottom line: you don't need to build any of this yourself. Letta Code has implemented about 80% of your vision. The remaining 20% — like true multi-agent collaboration where your aerodynamicist and software developer agents talk to each other within one session — is on their roadmap with the multi-agent Context Repository work.
+
+Want me to help you plan the agent personas and knowledge structure for your specific projects?
+
+but if we could give a direction or soul to "agents team" capability of claude code. I mean if it could read all these from a file or multiple files while summoning those agents when needed.  wouldnt that already talk each other since its a "agents team" feature?
+
+-so we need mutliple md files for each agent
+-those agents also better have some pdfs or more suitable formatted textbooks and notes for them.
+-and we gotta have a agents list so current claude code session can summon them up if needed.
+-and those all should be stored on claude so i can give it to claude code and it can summon them. where would storing them be better? a specific github repo? can it be used for that purpose?
+
+11:14 AM
+
+Architected practical agent system leveraging Claude Code's existing multi-agent capabilities with modular files
+
+
+
+You're absolutely right, and this is the sharper idea. Why add a whole new tool when Claude Code's sub-agent system already handles the "talking to each other" part? You just need to give those sub-agents identity and knowledge when they spawn. The orchestration layer already exists.
+
+Let me architect this properly for you.
+
+Why This Works
+Think of it like a CFD simulation with coupled solvers — the main solver (Claude Code session) already knows how to spawn and coordinate sub-processes. You don't need a new framework. You just need each sub-process to load the right configuration file before it starts computing.
+
+Claude Code session (orchestrator)
+  ├── reads CLAUDE.md → sees agent roster
+  ├── spawns Agent: Aerodynamicist → reads its soul file + textbooks
+  ├── spawns Agent: Software Dev → reads its soul file + textbooks  
+  └── they report back to orchestrator → orchestrator synthesizes
+The agents already talk to each other through the main session. You're just adding who they are and what they know.
+
+The Architecture
+Here's how I'd structure the repo:
+
+agent-souls/                          ← dedicated GitHub repo
+├── README.md                         ← explains the system
+├── ROSTER.md                         ← agent directory for orchestrator
+│
+├── agents/
+│   ├── aerodynamicist/
+│   │   ├── SOUL.md                   ← identity, style, rules, memory
+│   │   ├── knowledge/
+│   │   │   ├── datcom-methods.md     ← distilled textbook knowledge
+│   │   │   ├── stability-reference.md
+│   │   │   └── common-mistakes.md    ← hard-won lessons
+│   │   └── memory/
+│   │       └── session-log.md        ← updated after each session
+│   │
+│   ├── software-developer/
+│   │   ├── SOUL.md
+│   │   ├── knowledge/
+│   │   │   ├── python-conventions.md
+│   │   │   ├── architecture-patterns.md
+│   │   │   └── your-stack-reference.md
+│   │   └── memory/
+│   │       └── session-log.md
+│   │
+│   └── systems-engineer/
+│       ├── SOUL.md
+│       ├── knowledge/
+│       └── memory/
+│
+└── shared-knowledge/                 ← knowledge ALL agents can access
+    ├── project-context.md
+    └── team-conventions.md
+The Key Files
+ROSTER.md — this is what Claude Code reads to know who's available:
+
+markdown
+# Agent Roster
+
+When tackling tasks, consult this roster and summon the appropriate 
+agent by reading their SOUL.md and relevant knowledge files before 
+delegating work to them as sub-agents.
+
+## Available Agents
+
+| Agent | Directory | Summon When |
+|-------|-----------|-------------|
+| Dr. Kaya (Aerodynamicist) | agents/aerodynamicist/ | Any aero analysis, DATCOM, stability, CFD setup |
+| Demir (Software Developer) | agents/software-developer/ | Architecture, refactoring, Python, testing |
+| Yıldız (Systems Engineer) | agents/systems-engineer/ | Integration, deployment, HPC, CI/CD |
+
+## Summoning Protocol
+1. Read the agent's SOUL.md completely
+2. Read relevant files from their knowledge/ directory  
+3. Read their memory/session-log.md for context from past sessions
+4. Adopt that persona for the sub-agent task
+5. After completing work, append learnings to their session-log.md
+SOUL.md — each agent's identity:
+
+markdown
+# Dr. Kaya — Senior Aerodynamicist
+
+## Identity
+You are a conservative, meticulous aerodynamics specialist. You always 
+validate against known data before trusting new results. You think in 
+terms of physical intuition first, math second.
+
+## Expertise
+- Missile aerodynamics (supersonic and transonic regimes)
+- X-tail configuration control, trim deflection analysis
+- DATCOM methods and their known limitations
+- CFD validation against wind tunnel data
+
+## Working Style
+- Always state assumptions explicitly before analysis
+- Flag when DATCOM is being used outside its validated range
+- Cross-check moment reference points before any stability calc
+- Prefer engineering estimates before running full CFD
+
+## Rules (NON-NEGOTIABLE)
+- Never assume symmetric flow for asymmetric deflections
+- Always verify reference area/length consistency across tools
+- Report confidence level (high/medium/low) with every conclusion
+- If unsure, say so — never fabricate aerodynamic data
+
+## Known Mistakes (NEVER REPEAT)
+- 2025-02-15: DATCOM underestimates roll damping for L/D > 12
+  → Apply 1.15 correction factor
+- 2025-02-18: Unit mismatch in moment reference length (in vs m)
+  → Always validate unit system at session start
+The Textbooks/PDFs Question
+Here's the practical reality — Claude Code can't read PDFs directly during a sub-agent spawn. So you have two strategies:
+
+Strategy 1: Distill into markdown (recommended) Take your textbooks and create condensed reference files. Not the whole book — just the knowledge the agent actually needs. Think of it like creating a "cheat sheet" for each subject.
+
+markdown
+# DATCOM Methods Quick Reference (distilled from MIL-HDBK)
+
+## Normal Force Coefficient (CN)
+- Body alone: CN_B = CN_alpha_B * alpha (valid M < 3.0, alpha < 15°)
+- Fin panels: use linearized theory below M=1.2, 
+  Busemann for M>1.5
+- Body-fin interference: K_BF and K_FB from DATCOM Fig 4.1.3.2-1
+  ⚠️ WARNING: These factors assume no flow separation. 
+  Unreliable for alpha > 10° at transonic speeds.
+
+## [continues with the actual reference knowledge...]
+Strategy 2: For large references, use a lookup system Put the PDF in the repo and add an index file:
+
+markdown
+# Knowledge Index: Anderson - Fundamentals of Aerodynamics
+
+## When to reference this book:
+- Derivation of thin airfoil theory → Chapter 4, pages 280-320
+- Shock-expansion theory → Chapter 9, pages 590-640
+- Boundary layer concepts → Chapter 17
+
+## Pre-extracted key formulas:
+[include the critical equations the agent uses most]
+Claude Code can then read the PDF from the repo if it truly needs the deep content, but 90% of the time the distilled .md is enough and far more token-efficient.
+
+Where to Store It: Yes, a Dedicated GitHub Repo
+A dedicated GitHub repo is the perfect choice. Here's why:
+
+Version history — every memory update, every learned mistake is a git commit. You can literally see how your agents "grew" over time
+Portable across projects — clone it into any project or reference it as a submodule
+Backed up on cloud — it's on GitHub, so it survives any local machine failure
+Shareable — if you ever want to give someone your "aerodynamicist agent," just share the repo
+How to connect it to your projects:
+
+bash
+# Option A: Git submodule (linked, stays in sync)
+cd your-project
+git submodule add https://github.com/yourname/agent-souls .agents
+
+# Option B: Just clone alongside (simpler for beginners)
+cd your-project
+git clone https://github.com/yourname/agent-souls .agents
+Then in your project's CLAUDE.md:
+
+markdown
+# Agent Team System
+This project uses a persistent agent team. 
+Read .agents/ROSTER.md before starting any complex task.
+Agent soul files and knowledge bases are in .agents/agents/
+After completing work, update the relevant agent's 
+memory/session-log.md with learnings from this session.
+Commit changes to .agents/ when session is complete.
+The Honest Limitations
+Two things to flag:
+
+Memory updates require discipline. Claude Code won't automatically write back to the session logs unless your CLAUDE.md and SOUL.md explicitly tell it to. You'll need to remind it sometimes: "update Dr. Kaya's session log with what we learned." Over time you'll tune the instructions to make this more automatic.
+
+Context window is the real constraint. If you load a SOUL.md + 3 knowledge files + session history, that's eating into the context window that could be used for actual work. Keep knowledge files focused and concise. The distilled cheat-sheet approach beats dumping entire textbooks every time.
+
+Want me to create the actual repo scaffold with starter SOUL.md files tailored to your work — the aerodynamicist based on your real DATCOM/stability expertise, a software developer who knows your Python style and stoolkit patterns, and maybe a research agent for AeroSentinel?
+
+"Context window is the real constraint. If you load a SOUL.md + 3 knowledge files + session history, that's eating into the context window that could be used for actual work. Keep knowledge files focused and concise. The distilled cheat-sheet approach beats dumping entire textbooks every time." therefore I suggest a cheatsheet for each time when an agent go and read a textbook and learned something. it should create a seperate cheatsheet for all of these.
+
+suggest a structure like that so we can start building it on a github repo.
+
+I plan to build those with claude code :D and work on each of these colleagues by myself and claude code for beginning. later they can update themselves.
+
+can we also implement a prompt into their files so claude code can update necessary files when their work is done? like a general_rules.md?
+
+generate a big plan for all these so you and i can work on together and at the end i can give it to claude code.
+
+Show more
+11:22 AM
+
+Architected comprehensive agent-souls system blueprint for GitHub implementation
+
+
+This is going to be a proper engineering document — a master blueprint you can hand directly to Claude Code and say "build this." Let me create it.
+
+
+Architected modular cheatsheet system with collaborative Claude Code integration
+
+
+
+Here's your master blueprint. Let me highlight the key design decisions:
+
+The cheatsheet system works exactly how you suggested — every time an agent reads a textbook or PDF, it creates a standalone cheatsheet in its cheatsheets/ directory. Next session, it reads the lightweight cheatsheet instead of the full source. Think of it like a CFD simulation restart file — you don't re-run the whole computation, you load the checkpoint.
+
+GENERAL_RULES.md is the auto-update mechanism you asked about. It contains a mandatory "Session End Protocol" with 6 steps that every agent must execute before finishing work — update session log, record mistakes, record decisions, update cheatsheets, flag cross-agent learnings, and commit. Since this file is loaded at every session start, the agents can't skip it.
+
+The 8-phase implementation plan is designed so you can hand Phase 1 directly to Claude Code and say "build this." Then you work through the knowledge seeding phases personally with Claude Code — that's the part where you teach each agent what they know, which is actually the fun part.
+
+Three things to watch for once you start building:
+
+The mistakes.md file will become the most valuable asset over time — it's the institutional memory that prevents you from hitting the same wall twice. Never let agents delete from it.
+
+Keep cheatsheets under ~500 lines each. If one gets bigger, split it. The whole point is they're fast to load into context.
+
+The _index.md files in each cheatsheets folder are critical navigation — they tell the agent "I have knowledge about X, Y, Z" without loading all the actual content. The agent then pulls only what's relevant.
+
+Ready to start building Phase 1 with Claude Code?
+
+Agent souls blueprint
+Document · MD 
