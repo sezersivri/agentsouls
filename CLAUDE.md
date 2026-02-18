@@ -1,0 +1,73 @@
+# Agent Souls — Claude Code Integration
+
+## What This Is
+
+This repository (or submodule) contains persistent AI agent identities with knowledge and memory. Each agent in `.claude/agents/` is a specialized team member with domain expertise, accumulated cheatsheets, and memory of past sessions.
+
+## How to Use
+
+### Automatic Agent Discovery
+
+Claude Code automatically discovers agents from `.claude/agents/`. Each agent file specifies:
+- `model`: Which model tier to use (opus/sonnet/haiku)
+- `tools`: Which tools the agent is allowed to use
+- Role-specific instructions and knowledge loading sequence
+
+### Summoning Agents
+
+Agents are summoned by name or by task context:
+- **By name:** "Ask Miles to analyze the stability derivatives"
+- **By task:** Claude Code routes to the appropriate agent based on `.claude/agents/` definitions
+- **Agent Teams:** For complex multi-domain tasks, multiple agents can work in parallel
+
+### Agent Loading Sequence
+
+When an agent is activated, it MUST follow this sequence (defined in GENERAL_RULES.md):
+
+1. Read `GENERAL_RULES.md` — the universal rules
+2. Read their `SOUL.md` — their identity and hard rules
+3. Check `memory/mistakes.md` — pitfalls to avoid
+4. Scan `cheatsheets/_index.md` — available knowledge index
+5. Load relevant cheatsheets for the current task (progressive disclosure)
+
+### Session End Protocol
+
+Before ending ANY session, the active agent MUST:
+
+1. Update `memory/session-log.md`
+2. Record mistakes in `memory/mistakes.md`
+3. Record decisions in `memory/decisions.md`
+4. Update cheatsheets if new knowledge was learned
+5. Update `shared-knowledge/` if learnings affect other agents
+6. Commit: `git add . && git commit -m "[agent-name] session YYYY-MM-DD: description"`
+
+## Submodule Usage
+
+When this repo is included as a submodule (`.agents/`), the parent project's CLAUDE.md should reference it:
+
+```markdown
+## Agent Team
+This project uses the agent-souls system at `.agents/`.
+For specialized tasks, summon agents from `.agents/ROSTER.md`.
+Agent definitions are in `.agents/.claude/agents/`.
+```
+
+## Agent Roster Quick Reference
+
+| Domain | Agents | Lead (Opus) |
+|--------|--------|-------------|
+| Aerospace | Miles, Nash, Cole | Miles |
+| Software Dev | Max, Sam, Lena, Kit, Dash, Ward | Max |
+| Research | Sage, Reed | Sage |
+| Game Dev | Drake, Cody | Drake |
+| iOS Dev | Logan, Maya | Logan |
+| Financial | Blake, Kai, Finn | Blake |
+
+## Model Configuration
+
+Model assignments are in each agent's `.claude/agents/*.md` YAML frontmatter. To update models for new releases, edit the `model:` field in each agent wrapper file.
+
+Current tier mapping:
+- `opus` → Complex analysis, architecture, lead decisions
+- `sonnet` → Implementation, domain work, specialist tasks
+- `haiku` → Testing, documentation, routine tasks
