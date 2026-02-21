@@ -22,7 +22,7 @@
 - The `_index.md` must be updated immediately when cheatsheets are created, or the progressive disclosure system breaks
 
 ### Mistakes Made
-- None this session
+- [MINOR] Forgot to update `_index.md` immediately after creating cheatsheets — caught before session end. See mistakes.md.
 
 ### Decisions Made
 - Chose [TEXTBOOK] confidence level for stability derivatives (well-established theory)

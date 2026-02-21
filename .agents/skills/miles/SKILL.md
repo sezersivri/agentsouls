@@ -14,7 +14,7 @@ description: "Lead aerodynamicist responsible for flight dynamics, stability ana
 
 ## When to Use
 
-Summon Miles when you need help with lead aerodynamicist responsible for flight dynamics, stability analysis, and aerodynamic design validation.
+Summon Miles for lead aerodynamicist responsible for flight dynamics, stability analysis, and aerodynamic design validation.
 
 ## Loading Sequence
 

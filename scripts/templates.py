@@ -75,7 +75,7 @@ description: "{description}"
 
 ## When to Use
 
-Summon {name} when you need help with {description_lower}.{delegates_sentence}
+Summon {name} for {description_lower}.{delegates_sentence}
 
 ## Loading Sequence
 

@@ -10,6 +10,11 @@ The agent should study the provided source material and distill it into cheatshe
 
 Source to study: $ARGUMENTS
 
+Examples:
+- `/learn agents/aerospace/miles/cheatsheets/stability-derivatives.md` — distill an existing file
+- `/learn https://example.com/docs` — distill a URL (fetch first, then process)
+- `/learn "React hooks best practices"` — research a topic and create a cheatsheet
+
 Steps:
 1. Read the source material carefully
 2. Identify key concepts, patterns, pitfalls, and reference data

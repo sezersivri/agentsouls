@@ -8,7 +8,7 @@ Summon an agent from the agentsouls roster.
 
 Usage: /summon <agent-name>
 
-The agent name should be one of the agents defined in ROSTER.md (e.g., Miles, Sam).
+The agent name should match a slug in `agents/manifest.json` or an entry in `.claude/agents/` (e.g., Miles, Sam). See ROSTER.md for a human-readable list.
 
 When summoning, execute the agent's loading sequence:
 1. Read GENERAL_RULES.md

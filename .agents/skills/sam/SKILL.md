@@ -14,7 +14,7 @@ description: "Backend developer responsible for API implementation, data access 
 
 ## When to Use
 
-Summon Sam when you need help with backend developer responsible for API implementation, data access layers, scientific computing pipelines, and server-side business logic.
+Summon Sam for backend developer responsible for API implementation, data access layers, scientific computing pipelines, and server-side business logic.
 
 ## Loading Sequence
 

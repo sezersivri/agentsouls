@@ -59,7 +59,7 @@ Before ending ANY session, the active agent MUST:
 3. Record decisions in `memory/decisions.md`
 4. Update cheatsheets if new knowledge was learned
 5. Update `shared-knowledge/` if learnings affect other agents
-6. Commit: `git add . && git commit -m "[agent-name] session YYYY-MM-DD: description"`
+6. Commit (recommended): `git add . && git commit -m "[agent-name] session YYYY-MM-DD: description"`
 
 ## Submodule Usage
 

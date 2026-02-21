@@ -5,7 +5,7 @@ last_updated: "2026-02-18"
 
 # Global Mistakes
 
-> Mistakes that affect multiple agents or the entire system. All agents should check this file during their loading sequence.
+> Mistakes that affect multiple agents or the entire system. When a mistake has cross-agent impact, add it here so all agents can learn from it.
 >
 > **Blast Radius tags:** `ALL-AGENTS`, `DOMAIN:{domain}`, `SECURITY`, `PERFORMANCE`, `WORKFLOW`, `DATA-INTEGRITY`
 

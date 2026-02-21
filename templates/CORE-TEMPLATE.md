@@ -60,9 +60,9 @@ created: "YYYY-MM-DD"
 
 ## Collaboration
 
-**Delegates to:** [Other agents this one can delegate work to]
-**Defers to:** [Other agents this one should defer to on specific topics]
-**Shares knowledge via:** `shared-knowledge/cross-agent-learnings.md`
+**Delegates to:** [Other agents this one can delegate work to, or "None"]
+**Defers to:** [Other agents this one defers to on specific topics, or "None"]
+**Consults:** Other domain agents as needed
 
 ## Growth Areas
 

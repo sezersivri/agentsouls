@@ -49,7 +49,7 @@ Copy the template and fill in the agent's identity:
 
 ```bash
 # Example: adding an agent named "Nova" in the "research" domain
-mkdir -p agents/research/nova/{cheatsheets,memory,references}
+mkdir -p agents/research/nova/{cheatsheets,memory}
 cp templates/CORE-TEMPLATE.md agents/research/nova/CORE.md
 ```
 
@@ -75,17 +75,15 @@ cp templates/mistakes-template.md agents/research/nova/memory/mistakes.md
 cp templates/decisions-template.md agents/research/nova/memory/decisions.md
 ```
 
+After copying, open each file and replace `[Agent Name]` with your agent's actual name (e.g., "Nova").
+
 ### Step 3: Create the cheatsheet index
 
-Create an empty index file:
-
 ```bash
-cat > agents/research/nova/cheatsheets/_index.md << 'EOF'
-# Cheatsheet Index
-
-No cheatsheets yet.
-EOF
+cp templates/cheatsheet-index-template.md agents/research/nova/cheatsheets/_index.md
 ```
+
+Then replace `[Agent Name]` with your agent's name.
 
 ### Step 4: Add to manifest.json
 
@@ -241,7 +239,7 @@ Use `$ARGUMENTS` in the skill body to accept user input (e.g., `/learn <source>`
 
 1. Add the skill name to relevant agents' `skills` array in `manifest.json`
 2. Regenerate wrappers: `python scripts/generate-tool-configs.py`
-3. Run validation: `python scripts/validate.py` (check 9 validates skill frontmatter, check 11 validates skill refs)
+3. Run validation: `python scripts/validate.py` (check `skills-validation` validates skill frontmatter, check `v2-fields` validates skill refs)
 
 ## Adding Cross-Tool Support for a New CLI Tool
 
@@ -262,7 +260,7 @@ Each tool has a different way of loading context:
 
 If the new tool needs generated wrapper files (like Claude Code's `.claude/agents/` or the `.agents/skills/` directory):
 
-1. Add a new template constant to `scripts/generate-tool-configs.py`
+1. Add a new template constant or render function to `scripts/templates.py`
 2. Add a new render function
 3. Add the file generation to the `generate()` function
 4. Update this document

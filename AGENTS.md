@@ -73,11 +73,9 @@ Read .agents/skills/sam/SKILL.md
 
 ### Cursor
 
-Reference agent files in `.cursorrules`:
+Cursor automatically reads `.cursorrules` from the repo root, which is auto-generated with `@` references to each agent's CORE.md. No manual setup needed — just open the project in Cursor.
 
-```
-For backend tasks, load agents/software-dev/sam/CORE.md
-```
+See [CURSOR.md](CURSOR.md) for full Cursor integration instructions.
 
 ## Usage
 

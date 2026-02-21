@@ -32,4 +32,4 @@ To create agents for your workflow, set up a private fork and follow the step-by
 ## Stats
 
 - **Example agents:** 2 — Miles (Opus), Sam (Sonnet)
-- **Templates:** `templates/CORE-TEMPLATE.md`, `templates/cheatsheet-template.md`
+- **Templates:** `CORE-TEMPLATE.md`, `cheatsheet-template.md`, `cheatsheet-index-template.md`, `mistakes-template.md`, `decisions-template.md`, `session-log-template.md` (all in `templates/`)

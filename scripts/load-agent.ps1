@@ -43,7 +43,7 @@ if (-not (Test-Path $ManifestPath)) {
 }
 
 # ── Parse manifest and find agent ────────────────────────────────────────────
-$Manifest = Get-Content -Raw $ManifestPath | ConvertFrom-Json
+$Manifest = Get-Content -Raw -Encoding UTF8 $ManifestPath | ConvertFrom-Json
 $Agent = $Manifest.agents | Where-Object { $_.slug -eq $AgentSlug }
 
 if (-not $Agent) {
@@ -87,10 +87,10 @@ if ($Missing) {
 }
 
 # ── Read file contents ───────────────────────────────────────────────────────
-$GeneralRules    = Get-Content -Raw $GeneralRulesFile
-$Core           = Get-Content -Raw $CoreFile
-$Mistakes        = Get-Content -Raw $MistakesFile
-$CheatsheetIndex = Get-Content -Raw $IndexFile
+$GeneralRules    = Get-Content -Raw -Encoding UTF8 $GeneralRulesFile
+$Core           = Get-Content -Raw -Encoding UTF8 $CoreFile
+$Mistakes        = Get-Content -Raw -Encoding UTF8 $MistakesFile
+$CheatsheetIndex = Get-Content -Raw -Encoding UTF8 $IndexFile
 
 # ── Output ───────────────────────────────────────────────────────────────────
 if ($Format -eq "text") {

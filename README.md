@@ -107,7 +107,7 @@ git submodule add https://github.com/sezersivri/agentsouls.git .agents
 
 | Agent | Domain | Role | Model | What It Demonstrates |
 |-------|--------|------|-------|---------------------|
-| **Miles** | Aerospace | Aerodynamicist | Opus | Fully populated: 3 cheatsheets, memory entries, past sessions |
+| **Miles** | Aerospace | Aerodynamicist (Lead) | Opus | Fully populated: 3 cheatsheets, memory entries, past sessions |
 | **Sam** | Software Dev | Backend Developer | Sonnet | Minimal shell: shows the bare structure |
 
 ## Architecture

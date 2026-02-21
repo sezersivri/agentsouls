@@ -9,7 +9,7 @@
 
 **Date:** 2026-02-18
 **Project:** agentsouls setup
-**Context:** Creating the first 4 cheatsheets required assigning confidence levels to each piece of knowledge.
+**Context:** Creating the first 3 cheatsheets required assigning confidence levels to each piece of knowledge.
 **Options Considered:**
 1. Mark everything [TEXTBOOK] — simple but inaccurate for synthesized content
 2. Mark everything [UNCERTAIN] — overly conservative, undermines trust in well-established theory

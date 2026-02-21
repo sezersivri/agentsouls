@@ -72,13 +72,13 @@ if command -v cygpath &>/dev/null; then
     MANIFEST_NATIVE="$(cygpath -w "$MANIFEST")"
 fi
 
-AGENT_PATHS="$(python -c "
+AGENT_PATHS="$(python3 -c "
 import json, sys, os
 
 manifest_path = sys.argv[1]
 agent_slug = sys.argv[2]
 
-with open(manifest_path, 'r') as f:
+with open(manifest_path, encoding='utf-8') as f:
     manifest = json.load(f)
 
 for agent in manifest['agents']:
@@ -91,7 +91,7 @@ for agent in manifest['agents']:
 
 print('NOT_FOUND', file=sys.stderr)
 sys.exit(1)
-" "$MANIFEST_NATIVE" "$AGENT_SLUG" 2>&1)" || {
+" "$MANIFEST_NATIVE" "$AGENT_SLUG")" || {
     echo "Error: Agent '$AGENT_SLUG' not found in manifest.json" >&2
     exit 1
 }
@@ -153,14 +153,6 @@ ${MISTAKES}
 ${CHEATSHEET_INDEX}
 TEXTEOF
 elif [[ "$FORMAT" == "json" ]]; then
-    python -c "
-import json, sys
-
-data = {
-    'general_rules': sys.stdin.read()
-}
-" <<< "" >/dev/null 2>&1 || true  # just test python is available
-
     # Convert paths for Python on Windows
     GR_NATIVE="$GENERAL_RULES_FILE"
     CORE_NATIVE="$CORE_FILE"
@@ -173,14 +165,14 @@ data = {
         IDX_NATIVE="$(cygpath -w "$INDEX_FILE")"
     fi
 
-    python -c "
+    python3 -c "
 import json, sys
 
 output = {
-    'general_rules': open(sys.argv[1], 'r').read(),
-    'core': open(sys.argv[2], 'r').read(),
-    'mistakes': open(sys.argv[3], 'r').read(),
-    'cheatsheet_index': open(sys.argv[4], 'r').read()
+    'general_rules': open(sys.argv[1], encoding='utf-8').read(),
+    'core': open(sys.argv[2], encoding='utf-8').read(),
+    'mistakes': open(sys.argv[3], encoding='utf-8').read(),
+    'cheatsheet_index': open(sys.argv[4], encoding='utf-8').read()
 }
 
 print(json.dumps(output, indent=2))
