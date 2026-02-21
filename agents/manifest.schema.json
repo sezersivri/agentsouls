@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "manifest.schema.json",
+  "title": "Agent Souls Manifest",
+  "description": "Schema for agents/manifest.json. Validated by scripts/validate.py.",
+  "type": "object",
+  "required": ["schema_version", "agents"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schema_version": {
+      "type": "string",
+      "description": "Manifest schema version (e.g. '2.0')"
+    },
+    "repo_root_convention": {
+      "type": "string",
+      "description": "Human-readable note about how paths are interpreted"
+    },
+    "agents": {
+      "type": "array",
+      "description": "List of agent definitions",
+      "items": { "$ref": "#/$defs/agent" }
+    }
+  },
+  "$defs": {
+    "agent": {
+      "type": "object",
+      "required": ["name", "slug", "domain", "role", "description", "model", "paths"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Display name (e.g. 'Miles')"
+        },
+        "slug": {
+          "type": "string",
+          "description": "Lowercase identifier used in file paths (e.g. 'miles')",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "domain": {
+          "type": "string",
+          "description": "Domain folder name (e.g. 'aerospace', 'software-dev')"
+        },
+        "role": {
+          "type": "string",
+          "description": "Human-readable role (e.g. 'Aerodynamicist (Lead)')"
+        },
+        "description": {
+          "type": "string",
+          "description": "One-sentence summary used in generated wrappers"
+        },
+        "model": {
+          "type": "string",
+          "enum": ["opus", "sonnet", "haiku"],
+          "description": "Claude model tier: opus = complex analysis, sonnet = specialist, haiku = utility"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of tools/technologies this agent specialises in"
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Freeform labels (e.g. ['lead', 'aerospace'])"
+        },
+        "skills": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Framework skill names to pre-load (must resolve to .claude/skills/{name}/SKILL.md)",
+          "examples": [["session-end", "learn"]]
+        },
+        "tools": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Allowlist of tools this agent may use"
+            },
+            { "type": "null" }
+          ],
+          "description": "Restrict available tools, or null to allow all tools (default)"
+        },
+        "permissionMode": {
+          "type": "string",
+          "enum": ["default", "plan", "acceptEdits", "bypassPermissions"],
+          "description": "Claude Code permission mode for this agent"
+        },
+        "memory": {
+          "oneOf": [
+            { "type": "string", "enum": ["user", "project", "local"] },
+            { "type": "null" }
+          ],
+          "description": "Memory scope, or null to inherit default"
+        },
+        "isolation": {
+          "oneOf": [
+            { "type": "string", "enum": ["worktree"] },
+            { "type": "null" }
+          ],
+          "description": "Isolation mode, or null for none"
+        },
+        "paths": { "$ref": "#/$defs/paths" },
+        "delegates_to": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Agent slugs this agent can delegate subtasks to"
+        },
+        "defers_to": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Agent slugs this agent defers to on ambiguous decisions"
+        },
+        "escalates_to": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Agent slugs this agent escalates blockers to"
+        }
+      }
+    },
+    "paths": {
+      "type": "object",
+      "description": "File paths relative to repo root. All must exist after running the generator.",
+      "required": [
+        "core",
+        "cheatsheets",
+        "cheatsheet_index",
+        "memory",
+        "mistakes",
+        "session_log",
+        "decisions"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "core":             { "type": "string", "description": "Path to CORE.md" },
+        "cheatsheets":      { "type": "string", "description": "Path to cheatsheets/ directory" },
+        "cheatsheet_index": { "type": "string", "description": "Path to cheatsheets/_index.md" },
+        "memory":           { "type": "string", "description": "Path to memory/ directory" },
+        "mistakes":         { "type": "string", "description": "Path to memory/mistakes.md" },
+        "session_log":      { "type": "string", "description": "Path to memory/session-log.md" },
+        "decisions":        { "type": "string", "description": "Path to memory/decisions.md" }
+      }
+    }
+  }
+}

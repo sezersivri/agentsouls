@@ -6,7 +6,7 @@ This guide covers how to improve the framework, write cheatsheets, extend cross-
 
 Agent Souls is an open-source **framework**. Contributions that improve the framework for everyone are welcome:
 
-- Bug fixes in scripts (`validate.py`, `generate-tool-configs.py`, `update-indexes.sh`)
+- Bug fixes in scripts (`validate.py`, `generate-tool-configs.py`)
 - New tool integrations (Cursor, Windsurf, etc.)
 - Template improvements
 - Documentation improvements
@@ -19,7 +19,6 @@ Agent Souls is an open-source **framework**. Contributions that improve the fram
 ## Requirements
 
 - **Python >= 3.10** (no external dependencies needed)
-- **Bash** (for update-indexes.sh)
 - **Git** (for version control and submodule usage)
 
 ## Golden Rule: Generated Files Are Read-Only
@@ -87,7 +86,7 @@ Then replace `[Agent Name]` with your agent's name.
 
 ### Step 4: Add to manifest.json
 
-Add a new entry to `agents/manifest.json` in the `agents` array:
+Add a new entry to `agents/manifest.json` in the `agents` array. VS Code and Cursor will provide autocompletion and inline validation via `agents/manifest.schema.json` automatically.
 
 ```json
 {
@@ -138,7 +137,7 @@ This creates:
 ### Step 6: Update indexes
 
 ```bash
-bash scripts/update-indexes.sh
+python scripts/validate.py --fix
 ```
 
 ### Step 7: Add to ROSTER.md
@@ -203,7 +202,7 @@ version: "1.0"
 Always regenerate the index:
 
 ```bash
-bash scripts/update-indexes.sh
+python scripts/validate.py --fix
 ```
 
 ## Creating Framework Skills
@@ -308,13 +307,11 @@ Never manually edit generated files to fix a broken state. Always fix the source
 
 1. Run all validation: `python scripts/validate.py`
 2. Check generated file drift: `python scripts/generate-tool-configs.py --check`
-3. Check index accuracy: `bash scripts/update-indexes.sh --check`
 
 ### PR checklist
 
 - [ ] `python scripts/validate.py` passes with all checks green
 - [ ] Generated files are in sync (`python scripts/generate-tool-configs.py --check` exits 0)
-- [ ] Index files are accurate (`bash scripts/update-indexes.sh --check` exits 0)
 - [ ] If changing schema_version: migration instructions provided
 - [ ] Commit messages follow the format: `[agent-name] [action]: [description]`
 - [ ] If adding a framework skill: SKILL.md has valid frontmatter

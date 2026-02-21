@@ -22,6 +22,11 @@ node_modules/
 # Large binary files
 *.pdf
 
+# Environment / secrets
+.env
+.env.*
+.env.local
+
 # Editor/IDE
 .idea/
 .vscode/
