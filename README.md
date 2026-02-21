@@ -115,36 +115,94 @@ git submodule add https://github.com/sezersivri/agentsouls.git .agents
 ```
 agentsouls/
 ├── agents/
-│   ├── manifest.json            # Source of truth — all agents defined here
+│   ├── manifest.json            # Source of truth (v2.0 schema)
 │   └── {domain}/{agent}/
 │       ├── CORE.md              # Identity, rules, personality
 │       ├── cheatsheets/         # Distilled domain knowledge
 │       └── memory/              # Session logs, mistakes, decisions
-├── templates/                   # Templates for new agents/cheatsheets
-├── scripts/                     # generate, validate, index
-├── .claude/agents/              # Auto-generated Claude Code wrappers
+├── .claude/
+│   ├── agents/                  # Auto-generated Claude Code wrappers
+│   ├── skills/                  # Framework skills (summon, session-end, learn)
+│   └── settings.json            # Lifecycle hooks
 ├── .agents/skills/              # Auto-generated cross-tool skill files
+├── scripts/                     # generate, validate, index
+├── templates/                   # Templates for new agents/cheatsheets
 └── GENERAL_RULES.md             # The Constitution
 ```
+
+### Manifest v2.0
+
+Agents are defined in `agents/manifest.json`. The v2.0 schema adds optional fields beyond the original identity fields:
+
+```json
+{
+  "name": "Miles",
+  "slug": "miles",
+  "model": "opus",
+  "skills": ["session-end", "learn"],
+  ...
+}
+```
+
+| Field | Purpose | Default |
+|-------|---------|---------|
+| `skills` | Framework skills to pre-load | `[]` |
+| `tools` | Restrict available tools | `null` (all) |
+| `permissionMode` | Permission mode for agent sessions | `"default"` |
+
+All v2.0 fields are optional — omit them for v1.0 behavior. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full reference.
+
+### Generated Wrappers
+
+Running `python scripts/generate-tool-configs.py` produces wrappers from the manifest. Claude Code wrappers get enriched frontmatter:
+
+```yaml
+---
+name: miles
+model: opus
+description: "Lead aerodynamicist responsible for..."
+skills: session-end, learn
+---
+```
+
+Claude Code reads these fields natively — `name`, `model`, `description` for agent discovery, `skills` for pre-loading framework skills.
 
 ## Cross-Tool Support
 
 | Tool | How It Works |
 |------|-------------|
-| **Claude Code** | Native — agents auto-discovered from `.claude/agents/` |
+| **Claude Code** | Native — agents auto-discovered from `.claude/agents/` with enriched frontmatter |
 | **Gemini CLI** | Set `contextFileName: "AGENTS.md"` or load skills directly |
 | **Codex CLI** | Reads `AGENTS.md` automatically |
 | **Cursor** | Reference `CORE.md` paths in `.cursorrules` |
 
 ## Skills
 
-| Skill | What It Does |
-|-------|-------------|
-| `/summon <name>` | Load an agent's full context and identity |
-| `/session-end` | Execute the Session End Protocol (log, record, commit) |
-| `/learn <source>` | Study source material and distill into cheatsheets |
+Framework skills live in `.claude/skills/` and are invoked via slash commands:
 
-Skills live in `.claude/skills/` (framework-level, manually maintained). Per-agent skill files in `.agents/skills/` are auto-generated for cross-tool compatibility.
+| Skill | Command | What It Does |
+|-------|---------|-------------|
+| **summon** | `/summon <name>` | Load an agent's full context and identity |
+| **session-end** | `/session-end` | Execute the Session End Protocol (log, record, commit) |
+| **learn** | `/learn <source>` | Study source material and distill into cheatsheets |
+
+Each skill has `allowed-tools` in its frontmatter — for example, `/summon` is read-only (`Read, Grep, Glob`), while `/session-end` can write (`Read, Grep, Glob, Edit, Write, Bash`).
+
+**Two types of skill files:**
+- `.claude/skills/` — framework skills, manually maintained, shared across all agents
+- `.agents/skills/` — per-agent skill files, auto-generated from manifest for cross-tool compatibility
+
+## Lifecycle Hooks
+
+The framework configures Claude Code hooks in `.claude/settings.json`:
+
+| Hook | What It Does |
+|------|-------------|
+| **Stop** | Reminds you to run `/session-end` if an agent was active |
+| **PreCompact** | Warns if there are uncommitted memory updates before context compaction |
+| **SubagentStop** | Same reminder when a subagent finishes |
+
+These prevent the most common mistake: forgetting to persist what the agent learned.
 
 ## Contributing
 
@@ -152,11 +210,23 @@ Contributions to the **framework** are welcome — bug fixes, new tool integrati
 
 **Not accepted:** New agents. Agents are personal — create them in your [private fork](docs/PRIVATE-SETUP.md).
 
+## Validation
+
+The framework includes a 10-check validation suite:
+
+```bash
+python scripts/validate.py          # Run all checks
+python scripts/generate-tool-configs.py --check  # Verify no drift in generated files
+bash scripts/update-indexes.sh --check           # Verify cheatsheet indexes
+```
+
+Checks cover manifest schema, path resolution, frontmatter, UTF-8, generated file drift, memory structure, skills, and v2.0 field validity.
+
 ## Roadmap
 
 1. **Knowledge Seeding** — Populate example cheatsheets through real usage
 2. **Multi-repo Support** — Submodule overlay for agents across projects
-3. **v2.0 Stable** — Finalize enriched manifest schema, skills, and cross-tool packaging
+3. **Agent Teams** — Multi-agent coordination for complex cross-domain tasks
 
 ## Requirements
 
