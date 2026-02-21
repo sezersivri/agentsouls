@@ -1,5 +1,27 @@
 {
   "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "If an agent was active during this session, remind the user to run /session-end before closing to persist memory updates."
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Check if there are uncommitted memory updates (session-log.md, mistakes.md, decisions.md, cheatsheets). If so, warn that context compaction will lose uncommitted work and suggest running /session-end first."
+          }
+        ]
+      }
+    ],
     "SubagentStop": [
       {
         "matcher": "",

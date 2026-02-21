@@ -148,3 +148,20 @@ After completing any significant task:
 - Never skip validation steps to save time
 - If you don't know something, say so and suggest who might know
 - Always preserve existing work — don't delete or overwrite without explicit instruction
+
+## 11. Skills
+
+Framework skills provide standardized agent operations. They live in `.claude/skills/` and are available via slash commands:
+
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| **summon** | `/summon <name>` | Load an agent's full context and identity |
+| **session-end** | `/session-end` | Execute the Session End Protocol (log, record, commit) |
+| **learn** | `/learn <source>` | Study source material and distill into cheatsheets |
+
+Skills are automatically available to agents that list them in their manifest `skills` field. When an agent wrapper includes `skills: session-end, learn`, those skills are pre-loaded and ready to invoke.
+
+**Framework skills vs. per-agent skills:**
+- `.claude/skills/` — framework-level, manually maintained, shared across all agents
+- `.agents/skills/` — per-agent, auto-generated from manifest, used for cross-tool compatibility
+

@@ -1,3 +1,9 @@
+---
+name: learn
+description: Execute the Knowledge Consumption Protocol for the currently active agent
+allowed-tools: Read, Grep, Glob, Edit, Write, Bash
+---
+
 Execute the Knowledge Consumption Protocol for the currently active agent.
 
 The agent should study the provided source material and distill it into cheatsheets.

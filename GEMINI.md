@@ -15,6 +15,8 @@ Each agent is packaged as a skill in `.agents/skills/`. To load an agent:
 2. Follow the loading sequence to activate the agent's full context
 3. When finishing, follow the session-end protocol in GENERAL_RULES.md
 
+**Note:** The `.claude/skills/` directory contains Claude Code-specific framework skills (`/summon`, `/session-end`, `/learn`). These use Claude Code's native skill format and are not directly compatible with Gemini CLI. Use the loading sequence above instead.
+
 ## Available Agents
 
 See [ROSTER.md](ROSTER.md) for the available example agents.

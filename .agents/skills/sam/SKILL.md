@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED from agents/manifest.json — DO NOT EDIT MANUALLY -->
-<!-- generated_by: generate-tool-configs.py | schema: 1.0 -->
+<!-- generated_by: generate-tool-configs.py | schema: 2.0 -->
 
 ---
 name: "Sam"

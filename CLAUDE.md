@@ -8,17 +8,37 @@ This repository (or submodule) contains persistent AI agent identities with know
 
 ### Automatic Agent Discovery
 
-Claude Code automatically discovers agents from `.claude/agents/`. Each agent file specifies:
-- `model`: Which model tier to use (opus/sonnet/haiku)
-- `tools`: Which tools the agent is allowed to use
-- Role-specific instructions and knowledge loading sequence
+Claude Code automatically discovers agents from `.claude/agents/`. Each agent wrapper includes enriched frontmatter:
+
+```yaml
+---
+name: miles
+model: opus
+description: "Lead aerodynamicist responsible for..."
+skills: session-end, learn
+---
+```
+
+Frontmatter fields: `name`, `model`, `description`, `skills`. Additional fields (`tools`, `permissionMode`) are supported when needed — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Summoning Agents
 
 Agents are summoned by name or by task context:
 - **By name:** "Ask Miles to analyze the stability derivatives"
+- **By skill:** `/summon miles`
 - **By task:** Claude Code routes to the appropriate agent based on `.claude/agents/` definitions
-- **Agent Teams:** For complex multi-domain tasks, multiple agents can work in parallel
+
+### Skills
+
+Framework skills live in `.claude/skills/` and provide standardized agent operations:
+
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| **summon** | `/summon <name>` | Load an agent's full context and identity |
+| **session-end** | `/session-end` | Execute the Session End Protocol |
+| **learn** | `/learn <source>` | Study source material and distill into cheatsheets |
+
+Skills are distinct from per-agent skill files in `.agents/skills/` (which are auto-generated for cross-tool compatibility).
 
 ### Agent Loading Sequence
 
@@ -54,10 +74,10 @@ Agent definitions are in `.agents/.claude/agents/`.
 
 ## Example Agents
 
-| Agent | Domain | Role | Model |
-|-------|--------|------|-------|
-| Miles | Aerospace | Aerodynamicist (Lead) | Opus |
-| Sam | Software Dev | Backend Developer | Sonnet |
+| Agent | Domain | Role | Model | Skills |
+|-------|--------|------|-------|--------|
+| Miles | Aerospace | Aerodynamicist (Lead) | Opus | session-end, learn |
+| Sam | Software Dev | Backend Developer | Sonnet | session-end, learn |
 
 ## Model Configuration
 

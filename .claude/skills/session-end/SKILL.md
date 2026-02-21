@@ -1,3 +1,9 @@
+---
+name: session-end
+description: Execute the Session End Protocol for the currently active agent
+allowed-tools: Read, Grep, Glob, Edit, Write, Bash
+---
+
 Execute the Session End Protocol for the currently active agent.
 
 This is MANDATORY before ending any work session. Complete ALL steps:

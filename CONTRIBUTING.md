@@ -29,11 +29,13 @@ The following files are auto-generated from `agents/manifest.json` and templates
 - `.claude/agents/*.md` -- Claude Code agent wrappers
 - `.agents/skills/*/SKILL.md` -- Cross-tool skill files
 
-To change these files, edit `agents/manifest.json` (or the templates in `scripts/generate-tool-configs.py`), then run the generator:
+To change these files, edit `agents/manifest.json` (or the templates in `scripts/templates.py`), then run the generator:
 
 ```bash
 python scripts/generate-tool-configs.py
 ```
+
+**Note:** Framework skills (`.claude/skills/`) are manually maintained, not generated. Per-agent skills (`.agents/skills/`) are auto-generated.
 
 ## Creating Agents (For Your Private Fork)
 
@@ -97,6 +99,7 @@ Add a new entry to `agents/manifest.json` in the `agents` array:
   "model": "sonnet",
   "capabilities": ["python", "pandas", "scikit-learn", "jupyter"],
   "tags": ["specialist", "research"],
+  "skills": ["session-end", "learn"],
   "paths": {
     "core": "agents/research/nova/CORE.md",
     "cheatsheets": "agents/research/nova/cheatsheets/",
@@ -111,6 +114,16 @@ Add a new entry to `agents/manifest.json` in the `agents` array:
   "escalates_to": ["sage"]
 }
 ```
+
+#### v2.0 Manifest Fields
+
+| Field | Type | Default | Purpose |
+|-------|------|---------|---------|
+| `skills` | `string[]` | `[]` | Pre-load framework skills (e.g. `["session-end", "learn"]`) |
+| `tools` | `string[]` or `null` | `null` (all) | Restrict which tools the agent can use |
+| `permissionMode` | `string` | `"default"` | Permission mode: `default`, `plan`, `acceptEdits`, `bypassPermissions` |
+
+All v2.0 fields are optional and default to v1.0 behavior if omitted.
 
 ### Step 5: Run the generator
 
@@ -193,6 +206,41 @@ Always regenerate the index:
 bash scripts/update-indexes.sh
 ```
 
+## Creating Framework Skills
+
+Framework skills live in `.claude/skills/{skill-name}/SKILL.md`. They are manually maintained (not auto-generated).
+
+### Skill structure
+
+```
+.claude/skills/my-skill/
+└── SKILL.md
+```
+
+### SKILL.md format
+
+Every skill must have YAML frontmatter:
+
+```yaml
+---
+name: my-skill
+description: Short description of what this skill does
+allowed-tools: Read, Grep, Glob, Edit, Write, Bash
+---
+```
+
+- `name`: Matches the directory name
+- `description`: Shown in the skill list
+- `allowed-tools`: Restricts which tools the skill can use
+
+Use `$ARGUMENTS` in the skill body to accept user input (e.g., `/learn <source>` passes `<source>` as `$ARGUMENTS`).
+
+### After creating a skill
+
+1. Add the skill name to relevant agents' `skills` array in `manifest.json`
+2. Regenerate wrappers: `python scripts/generate-tool-configs.py`
+3. Run validation: `python scripts/validate.py` (check 9 validates skill frontmatter, check 11 validates skill refs)
+
 ## Adding Cross-Tool Support for a New CLI Tool
 
 The agentsouls system is designed for multi-tool compatibility. To add support for a new AI coding tool:
@@ -269,3 +317,5 @@ Never manually edit generated files to fix a broken state. Always fix the source
 - [ ] Index files are accurate (`bash scripts/update-indexes.sh --check` exits 0)
 - [ ] If changing schema_version: migration instructions provided
 - [ ] Commit messages follow the format: `[agent-name] [action]: [description]`
+- [ ] If adding a framework skill: SKILL.md has valid frontmatter
+- [ ] If adding v2.0 fields: values are within the valid set (see CONTRIBUTING.md)

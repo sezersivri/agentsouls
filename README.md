@@ -136,13 +136,15 @@ agentsouls/
 | **Codex CLI** | Reads `AGENTS.md` automatically |
 | **Cursor** | Reference `CORE.md` paths in `.cursorrules` |
 
-## Commands
+## Skills
 
-| Command | What It Does |
-|---------|-------------|
+| Skill | What It Does |
+|-------|-------------|
 | `/summon <name>` | Load an agent's full context and identity |
 | `/session-end` | Execute the Session End Protocol (log, record, commit) |
 | `/learn <source>` | Study source material and distill into cheatsheets |
+
+Skills live in `.claude/skills/` (framework-level, manually maintained). Per-agent skill files in `.agents/skills/` are auto-generated for cross-tool compatibility.
 
 ## Contributing
 
@@ -154,7 +156,7 @@ Contributions to the **framework** are welcome — bug fixes, new tool integrati
 
 1. **Knowledge Seeding** — Populate example cheatsheets through real usage
 2. **Multi-repo Support** — Submodule overlay for agents across projects
-3. **v1.0 Stable** — Stabilize manifest schema and cross-tool packaging
+3. **v2.0 Stable** — Finalize enriched manifest schema, skills, and cross-tool packaging
 
 ## Requirements
 

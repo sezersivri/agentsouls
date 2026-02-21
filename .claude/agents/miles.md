@@ -1,7 +1,10 @@
 <!-- AUTO-GENERATED from agents/manifest.json — DO NOT EDIT MANUALLY -->
-<!-- generated_by: generate-tool-configs.py | schema: 1.0 -->
+<!-- generated_by: generate-tool-configs.py | schema: 2.0 -->
 ---
-model: "opus"
+name: miles
+model: opus
+description: "Lead aerodynamicist responsible for flight dynamics, stability analysis, and aerodynamic design validation."
+skills: session-end, learn
 ---
 
 # Miles — Aerodynamicist (Lead)

@@ -1,3 +1,9 @@
+---
+name: summon
+description: Summon an agent from the agentsouls roster
+allowed-tools: Read, Grep, Glob
+---
+
 Summon an agent from the agentsouls roster.
 
 Usage: /summon <agent-name>

@@ -43,7 +43,7 @@ Edit `agents/manifest.json` and replace the `agents` array with an empty array:
 
 ```json
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "repo_root_convention": "All paths relative to repo root",
   "agents": []
 }
@@ -85,6 +85,7 @@ Add your agent to the `agents` array in `agents/manifest.json`:
   "model": "sonnet",
   "capabilities": ["python", "fastapi", "postgresql"],
   "tags": ["specialist", "software-dev"],
+  "skills": ["session-end", "learn"],
   "paths": {
     "core": "agents/software-dev/nova/CORE.md",
     "cheatsheets": "agents/software-dev/nova/cheatsheets/",
@@ -99,6 +100,8 @@ Add your agent to the `agents` array in `agents/manifest.json`:
   "escalates_to": []
 }
 ```
+
+v2.0 adds optional fields (`skills`, `tools`, `permissionMode`). Only `skills` is shown above — the rest default safely if omitted. See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full field reference.
 
 ### 8. Generate and validate
 
@@ -184,7 +187,7 @@ Agents get better with use. After each session:
 - Logs key decisions (`decisions.md`)
 - Builds cheatsheets from learned knowledge
 
-The `/session-end` command handles this automatically.
+The `/session-end` skill handles this automatically.
 
 ### Multiple projects
 

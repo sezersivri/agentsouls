@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "repo_root_convention": "All paths relative to repo root",
   "agents": [
     {
@@ -11,6 +11,7 @@
       "model": "opus",
       "capabilities": ["python", "jsbsim", "matlab", "openvsp", "flight-dynamics"],
       "tags": ["lead", "aerospace"],
+      "skills": ["session-end", "learn"],
       "paths": {
         "core": "agents/aerospace/miles/CORE.md",
         "cheatsheets": "agents/aerospace/miles/cheatsheets/",
@@ -33,6 +34,7 @@
       "model": "sonnet",
       "capabilities": ["python", "fastapi", "sqlalchemy", "postgresql", "pytest", "async"],
       "tags": ["specialist", "software-dev"],
+      "skills": ["session-end", "learn"],
       "paths": {
         "core": "agents/software-dev/sam/CORE.md",
         "cheatsheets": "agents/software-dev/sam/cheatsheets/",

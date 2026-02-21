@@ -46,10 +46,11 @@ All agents follow `GENERAL_RULES.md` which defines:
 
 ### Claude Code
 
-Native integration. Agents are auto-discovered from `.claude/agents/`. Summon by name or use slash commands.
+Native integration. Agents are auto-discovered from `.claude/agents/` with enriched frontmatter (name, model, description, skills). Framework skills are available in `.claude/skills/` (`/summon`, `/session-end`, `/learn`).
 
 ```
 "Ask Miles to analyze the stability derivatives"
+/summon miles
 ```
 
 ### Gemini CLI
