@@ -127,6 +127,8 @@ agentsouls/
 ├── .agents/skills/              # Auto-generated cross-tool skill files
 ├── scripts/                     # generate, validate, index
 ├── templates/                   # Templates for new agents/cheatsheets
+├── .cursorrules                 # Auto-generated Cursor integration
+├── .windsurfrules               # Auto-generated Windsurf integration
 └── GENERAL_RULES.md             # The Constitution
 ```
 
@@ -169,12 +171,13 @@ Claude Code reads these fields natively — `name`, `model`, `description` for a
 
 ## Cross-Tool Support
 
-| Tool | How It Works |
-|------|-------------|
-| **Claude Code** | Native — agents auto-discovered from `.claude/agents/` with enriched frontmatter |
-| **Gemini CLI** | Set `contextFileName: "AGENTS.md"` or load skills directly |
-| **Codex CLI** | Reads `AGENTS.md` automatically |
-| **Cursor** | Reference `CORE.md` paths in `.cursorrules` |
+| Tool | How It Works | Integration Guide |
+|------|-------------|-------------------|
+| **Claude Code** | Native — agents auto-discovered from `.claude/agents/` | [CLAUDE.md](CLAUDE.md) |
+| **Gemini CLI** | Set `contextFileName: "AGENTS.md"` or load skills directly | [GEMINI.md](GEMINI.md) |
+| **Cursor** | Auto-generated `.cursorrules` with `@` file references | [CURSOR.md](CURSOR.md) |
+| **Windsurf** | Auto-generated `.windsurfrules` (concise, fits 6K limit) | [WINDSURF.md](WINDSURF.md) |
+| **Codex CLI** | Reads `AGENTS.md` automatically | [AGENTS.md](AGENTS.md) |
 
 ## Skills
 

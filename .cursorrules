@@ -1,0 +1,24 @@
+# Agent Souls — Cursor Integration
+# AUTO-GENERATED from agents/manifest.json — DO NOT EDIT MANUALLY
+# generated_by: generate-tool-configs.py | schema: 2.0
+
+This project uses the Agent Souls framework for persistent AI agent identities.
+Read @GENERAL_RULES.md for the universal rules all agents follow.
+
+## Available Agents
+
+- **Miles** (Aerodynamicist (Lead), opus): @agents/aerospace/miles/CORE.md
+- **Sam** (Backend Developer, sonnet): @agents/software-dev/sam/CORE.md
+
+## Loading an Agent
+
+1. Read @GENERAL_RULES.md
+2. Read the agent's CORE.md (paths listed above)
+3. Check their memory/mistakes.md
+4. Scan their cheatsheets/_index.md
+5. Load relevant cheatsheets for the current task
+
+## Session End
+
+Before ending any session, follow the session-end protocol in @GENERAL_RULES.md:
+update session-log.md, mistakes.md, decisions.md, and cheatsheets.

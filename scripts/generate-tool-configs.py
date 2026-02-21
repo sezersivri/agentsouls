@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-"""Generate Claude Code agent wrappers and cross-tool skill files from manifest.json.
+"""Generate Claude Code agent wrappers and cross-tool config files from manifest.json.
 
 Usage:
     python generate-tool-configs.py          # Generate all files
     python generate-tool-configs.py --check  # Verify committed files match (exits non-zero on drift)
 
 AUTO-GENERATED files produced:
-    .claude/agents/{slug}.md   — Claude Code agent wrappers
+    .claude/agents/{slug}.md       — Claude Code agent wrappers
     .agents/skills/{slug}/SKILL.md — Cross-tool skill files
+    .cursorrules                   — Cursor integration
+    .windsurfrules                 — Windsurf integration
 
 Requirements: Python 3.10+, no external dependencies.
 """
@@ -22,7 +24,13 @@ _SCRIPT_DIR = Path(__file__).resolve().parent
 if str(_SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPT_DIR))
 
-from templates import render_claude_agent, render_skill, sort_agents
+from templates import (
+    render_claude_agent,
+    render_cursorrules,
+    render_skill,
+    render_windsurfrules,
+    sort_agents,
+)
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -76,6 +84,10 @@ def generate(repo_root: Path, output_root: Path) -> list[tuple[str, str]]:
         skill_content = render_skill(agent, schema_version)
         generated.append((skill_rel, skill_content))
 
+    # Repo-level tool config files
+    generated.append((".cursorrules", render_cursorrules(agents, schema_version)))
+    generated.append((".windsurfrules", render_windsurfrules(agents, schema_version)))
+
     return generated
 
 
@@ -99,9 +111,11 @@ def do_generate(repo_root: Path) -> None:
                 unchanged += 1
 
     total = len(files)
+    per_agent = (total - 2) // 2  # subtract .cursorrules + .windsurfrules
     print(f"Generated {total} files ({created} created, {updated} updated, {unchanged} unchanged)")
-    print(f"  - .claude/agents/*.md: {total // 2} files")
-    print(f"  - .agents/skills/*/SKILL.md: {total // 2} files")
+    print(f"  - .claude/agents/*.md: {per_agent} files")
+    print(f"  - .agents/skills/*/SKILL.md: {per_agent} files")
+    print(f"  - .cursorrules, .windsurfrules: 2 files")
 
 
 def do_check(repo_root: Path) -> None:

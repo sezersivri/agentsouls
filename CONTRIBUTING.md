@@ -28,6 +28,8 @@ The following files are auto-generated from `agents/manifest.json` and templates
 
 - `.claude/agents/*.md` -- Claude Code agent wrappers
 - `.agents/skills/*/SKILL.md` -- Cross-tool skill files
+- `.cursorrules` -- Cursor integration
+- `.windsurfrules` -- Windsurf integration
 
 To change these files, edit `agents/manifest.json` (or the templates in `scripts/templates.py`), then run the generator:
 

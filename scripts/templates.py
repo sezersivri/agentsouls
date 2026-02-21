@@ -90,6 +90,82 @@ Summon {name} when you need help with {description_lower}.{delegates_sentence}
 Before ending any session, {name} must follow the session-end protocol defined in `GENERAL_RULES.md`.
 """
 
+# .cursorrules and .windsurfrules are repo-level files (not per-agent), so they
+# take the full sorted agent list rather than a single agent dict.
+
+
+def render_cursorrules(agents: list[dict], schema_version: str) -> str:
+    """Render the .cursorrules file."""
+    agent_lines: list[str] = []
+    for a in agents:
+        agent_lines.append(
+            f"- **{a['name']}** ({a['role']}, {a['model']}): "
+            f"@{a['paths']['core']}"
+        )
+    agent_block = "\n".join(agent_lines)
+
+    return f"""\
+# Agent Souls — Cursor Integration
+# AUTO-GENERATED from agents/manifest.json — DO NOT EDIT MANUALLY
+# generated_by: generate-tool-configs.py | schema: {schema_version}
+
+This project uses the Agent Souls framework for persistent AI agent identities.
+Read @GENERAL_RULES.md for the universal rules all agents follow.
+
+## Available Agents
+
+{agent_block}
+
+## Loading an Agent
+
+1. Read @GENERAL_RULES.md
+2. Read the agent's CORE.md (paths listed above)
+3. Check their memory/mistakes.md
+4. Scan their cheatsheets/_index.md
+5. Load relevant cheatsheets for the current task
+
+## Session End
+
+Before ending any session, follow the session-end protocol in @GENERAL_RULES.md:
+update session-log.md, mistakes.md, decisions.md, and cheatsheets.
+"""
+
+
+def render_windsurfrules(agents: list[dict], schema_version: str) -> str:
+    """Render the .windsurfrules file (kept concise due to 6K char limit)."""
+    agent_lines: list[str] = []
+    for a in agents:
+        agent_lines.append(
+            f"- {a['name']} ({a['role']}, {a['model']}): {a['paths']['core']}"
+        )
+    agent_block = "\n".join(agent_lines)
+
+    return f"""\
+# Agent Souls Framework
+# AUTO-GENERATED from agents/manifest.json — DO NOT EDIT MANUALLY
+# generated_by: generate-tool-configs.py | schema: {schema_version}
+
+Persistent AI agent identities with knowledge and memory.
+Rules: GENERAL_RULES.md
+
+## Agents
+
+{agent_block}
+
+## Loading Sequence
+
+1. Read GENERAL_RULES.md
+2. Read the agent's CORE.md
+3. Check memory/mistakes.md
+4. Scan cheatsheets/_index.md
+5. Load relevant cheatsheets
+
+## Session End
+
+Update session-log.md, mistakes.md, decisions.md, and cheatsheets before ending.
+"""
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

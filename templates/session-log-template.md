@@ -4,7 +4,7 @@
 
 ---
 
-## Session: YYYY-MM-DD
+## Session: {slug}-YYYY-MM-DD-001
 
 **Project:** [project name]
 **Task:** [what was asked]
