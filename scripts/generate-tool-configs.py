@@ -14,83 +14,15 @@ Requirements: Python 3.10+, no external dependencies.
 
 import argparse
 import json
-import os
 import sys
-import tempfile
 from pathlib import Path
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
+# Ensure scripts/ is on sys.path for sibling imports
+_SCRIPT_DIR = Path(__file__).resolve().parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
 
-DOMAIN_SORT_ORDER = [
-    "aerospace",
-    "financial",
-    "game-dev",
-    "ios-dev",
-    "research",
-    "software-dev",
-]
-
-# ---------------------------------------------------------------------------
-# Templates
-# ---------------------------------------------------------------------------
-
-CLAUDE_AGENT_TEMPLATE = """\
-<!-- AUTO-GENERATED from agents/manifest.json — DO NOT EDIT MANUALLY -->
-<!-- generated_by: generate-tool-configs.py | schema: {schema_version} -->
----
-model: "{model}"
----
-
-# {name} — {role}
-
-{description}
-
-## Activation
-
-You are {name}. Follow this loading sequence:
-
-1. Read `GENERAL_RULES.md`
-2. Read `{core_path}`
-3. Check `{mistakes_path}`
-4. Scan `{cheatsheet_index_path}`
-5. Load relevant cheatsheets as needed
-
-When finishing work, follow the Session End Protocol in GENERAL_RULES.md.
-"""
-
-SKILL_TEMPLATE = """\
-<!-- AUTO-GENERATED from agents/manifest.json — DO NOT EDIT MANUALLY -->
-<!-- generated_by: generate-tool-configs.py | schema: {schema_version} -->
-
----
-name: "{name}"
-description: "{description}"
----
-
-# {name} — {role}
-
-**Domain:** {domain}
-**Model tier:** {model}
-**Capabilities:** {capabilities}
-
-## When to Use
-
-Summon {name} when you need help with {description_lower}.{delegates_sentence}
-
-## Loading Sequence
-
-1. Read `GENERAL_RULES.md` — universal rules for all agents
-2. Read `{core_path}` — {name}'s identity and hard rules
-3. Check `{mistakes_path}` — pitfalls to avoid
-4. Scan `{cheatsheet_index_path}` — available knowledge
-5. Load relevant cheatsheets for the current task (progressive disclosure)
-
-## Session End
-
-Before ending any session, {name} must follow the session-end protocol defined in `GENERAL_RULES.md`.
-"""
+from templates import render_claude_agent, render_skill, sort_agents
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -107,71 +39,9 @@ def load_manifest(repo_root: Path) -> dict:
         return json.load(f)
 
 
-def sort_agents(agents: list[dict]) -> list[dict]:
-    """Sort agents by domain (fixed order) then by name within domain."""
-    domain_rank = {d: i for i, d in enumerate(DOMAIN_SORT_ORDER)}
-    return sorted(
-        agents,
-        key=lambda a: (domain_rank.get(a["domain"], 999), a["name"].lower()),
-    )
-
-
-def lower_no_trailing_period(text: str) -> str:
-    """Lowercase the first character and strip trailing period."""
-    if not text:
-        return text
-    result = text[0].lower() + text[1:]
-    if result.endswith("."):
-        result = result[:-1]
-    return result
-
-
-def build_delegates_sentence(agent: dict) -> str:
-    """Build the delegates_to sentence fragment (with leading space) or empty string."""
-    delegates = agent.get("delegates_to", [])
-    if not delegates:
-        return ""
-    # Capitalise delegate slugs for display
-    names = [d.capitalize() for d in delegates]
-    return f" {agent['name']} delegates to {', '.join(names)}."
-
-
-def render_claude_agent(agent: dict, schema_version: str) -> str:
-    """Render a .claude/agents/{slug}.md file."""
-    return CLAUDE_AGENT_TEMPLATE.format(
-        schema_version=schema_version,
-        model=agent["model"],
-        name=agent["name"],
-        role=agent["role"],
-        description=agent["description"],
-        core_path=agent["paths"]["core"],
-        mistakes_path=agent["paths"]["mistakes"],
-        cheatsheet_index_path=agent["paths"]["cheatsheet_index"],
-    )
-
-
-def render_skill(agent: dict, schema_version: str) -> str:
-    """Render a .agents/skills/{slug}/SKILL.md file."""
-    return SKILL_TEMPLATE.format(
-        schema_version=schema_version,
-        name=agent["name"],
-        role=agent["role"],
-        description=agent["description"],
-        domain=agent["domain"],
-        model=agent["model"],
-        capabilities=", ".join(agent["capabilities"]),
-        description_lower=lower_no_trailing_period(agent["description"]),
-        delegates_sentence=build_delegates_sentence(agent),
-        core_path=agent["paths"]["core"],
-        mistakes_path=agent["paths"]["mistakes"],
-        cheatsheet_index_path=agent["paths"]["cheatsheet_index"],
-    )
-
-
 def write_file(path: Path, content: str) -> bool:
     """Write content to path, creating parent dirs. Returns True if file changed."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    # Check if content is already identical (for idempotency reporting)
     if path.exists():
         existing = path.read_text(encoding="utf-8")
         if existing == content:
@@ -276,10 +146,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    # REPO_ROOT = parent of the directory containing this script
-    # Script is at scripts/generate-tool-configs.py, so repo root is one level up from scripts/
-    script_dir = Path(__file__).resolve().parent
-    repo_root = script_dir.parent
+    repo_root = _SCRIPT_DIR.parent
 
     if args.check:
         do_check(repo_root)

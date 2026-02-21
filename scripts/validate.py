@@ -7,14 +7,16 @@ Usage:
     python scripts/validate.py --fix    # Auto-fix safe issues (_index.md regeneration only)
 
 Checks performed:
-    1. Manifest validation (schema, required fields)
-    2. Path resolution (all manifest paths exist)
-    3. CORE.md frontmatter (required YAML fields)
-    4. Cheatsheet frontmatter (warning if missing)
-    5. _index.md accuracy (matches actual cheatsheet files)
-    6. UTF-8 validation (all .md files)
-    7. Generated file drift (.claude/agents/*.md, .agents/skills/*/SKILL.md)
-    8. Memory file structure (session-log.md, mistakes.md, decisions.md)
+    1.  Manifest validation (schema, required fields)
+    2.  Path resolution (all manifest paths exist)
+    3.  CORE.md frontmatter (required YAML fields)
+    4.  Cheatsheet frontmatter (warning if missing)
+    5.  _index.md accuracy (matches actual cheatsheet files)
+    6.  UTF-8 validation (all .md files)
+    7.  Generated file drift (.claude/agents/*.md, .agents/skills/*/SKILL.md)
+    8.  Memory file structure (session-log.md, mistakes.md, decisions.md)
+    9.  Skills validation (framework skills exist with valid frontmatter)
+    10. v2 fields (skills refs resolve; optional field values valid when present)
 
 Requirements: Python 3.10+, no external dependencies.
 """
@@ -23,10 +25,23 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
 import sys
 from pathlib import Path
+
+# Ensure scripts/ is on sys.path for sibling imports
+_SCRIPT_DIR = Path(__file__).resolve().parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
+
+from templates import (
+    VALID_ISOLATION_MODES,
+    VALID_MEMORY_SCOPES,
+    VALID_PERMISSION_MODES,
+    render_claude_agent,
+    render_skill,
+    sort_agents,
+)
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -54,6 +69,8 @@ REQUIRED_PATH_FIELDS = [
 REQUIRED_CORE_FRONTMATTER = ["agent_name", "domain", "role", "model"]
 
 AUTO_GENERATED_HEADER = "<!-- AUTO-GENERATED from agents/manifest.json"
+
+FRAMEWORK_SKILLS = ["summon", "session-end", "learn"]
 
 # ---------------------------------------------------------------------------
 # Result tracking
@@ -97,7 +114,7 @@ def parse_frontmatter(text: str) -> dict[str, str] | None:
     for line in lines[1:]:
         if line.strip() == "---":
             return fields
-        match = re.match(r'^(\w[\w_]*)\s*:\s*"?([^"]*)"?\s*$', line)
+        match = re.match(r'^(\w[\w_-]*)\s*:\s*"?([^"]*)"?\s*$', line)
         if match:
             fields[match.group(1)] = match.group(2).strip()
     return None  # Never found closing ---
@@ -153,7 +170,6 @@ def build_index_content(cheatsheets_dir: Path) -> str:
             topic = kebab_to_title(cs_file.name)
 
         if not last_updated:
-            # Use file modification date
             try:
                 import datetime
                 mtime = cs_file.stat().st_mtime
@@ -175,120 +191,8 @@ def build_index_content(cheatsheets_dir: Path) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Generated file drift check (mirrors generate-tool-configs.py --check)
+# Generated file drift check
 # ---------------------------------------------------------------------------
-
-# Domain sort order (must match generate-tool-configs.py)
-DOMAIN_SORT_ORDER = [
-    "aerospace", "financial", "game-dev", "ios-dev", "research", "software-dev",
-]
-
-CLAUDE_AGENT_TEMPLATE = """\
-<!-- AUTO-GENERATED from agents/manifest.json — DO NOT EDIT MANUALLY -->
-<!-- generated_by: generate-tool-configs.py | schema: {schema_version} -->
----
-model: "{model}"
----
-
-# {name} — {role}
-
-{description}
-
-## Activation
-
-You are {name}. Follow this loading sequence:
-
-1. Read `GENERAL_RULES.md`
-2. Read `{core_path}`
-3. Check `{mistakes_path}`
-4. Scan `{cheatsheet_index_path}`
-5. Load relevant cheatsheets as needed
-
-When finishing work, follow the Session End Protocol in GENERAL_RULES.md.
-"""
-
-SKILL_TEMPLATE = """\
-<!-- AUTO-GENERATED from agents/manifest.json — DO NOT EDIT MANUALLY -->
-<!-- generated_by: generate-tool-configs.py | schema: {schema_version} -->
-
----
-name: "{name}"
-description: "{description}"
----
-
-# {name} — {role}
-
-**Domain:** {domain}
-**Model tier:** {model}
-**Capabilities:** {capabilities}
-
-## When to Use
-
-Summon {name} when you need help with {description_lower}.{delegates_sentence}
-
-## Loading Sequence
-
-1. Read `GENERAL_RULES.md` — universal rules for all agents
-2. Read `{core_path}` — {name}'s identity and hard rules
-3. Check `{mistakes_path}` — pitfalls to avoid
-4. Scan `{cheatsheet_index_path}` — available knowledge
-5. Load relevant cheatsheets for the current task (progressive disclosure)
-
-## Session End
-
-Before ending any session, {name} must follow the session-end protocol defined in `GENERAL_RULES.md`.
-"""
-
-
-def lower_no_trailing_period(text: str) -> str:
-    if not text:
-        return text
-    result = text[0].lower() + text[1:]
-    return result.rstrip(".")
-
-
-def build_delegates_sentence(agent: dict) -> str:
-    delegates = agent.get("delegates_to", [])
-    if not delegates:
-        return ""
-    names = [d.capitalize() for d in delegates]
-    return f" {agent['name']} delegates to {', '.join(names)}."
-
-
-def sort_agents(agents: list[dict]) -> list[dict]:
-    domain_rank = {d: i for i, d in enumerate(DOMAIN_SORT_ORDER)}
-    return sorted(agents, key=lambda a: (domain_rank.get(a["domain"], 999), a["name"].lower()))
-
-
-def render_claude_agent(agent: dict, schema_version: str) -> str:
-    return CLAUDE_AGENT_TEMPLATE.format(
-        schema_version=schema_version,
-        model=agent["model"],
-        name=agent["name"],
-        role=agent["role"],
-        description=agent["description"],
-        core_path=agent["paths"]["core"],
-        mistakes_path=agent["paths"]["mistakes"],
-        cheatsheet_index_path=agent["paths"]["cheatsheet_index"],
-    )
-
-
-def render_skill(agent: dict, schema_version: str) -> str:
-    return SKILL_TEMPLATE.format(
-        schema_version=schema_version,
-        name=agent["name"],
-        role=agent["role"],
-        description=agent["description"],
-        domain=agent["domain"],
-        model=agent["model"],
-        capabilities=", ".join(agent.get("capabilities", [])),
-        description_lower=lower_no_trailing_period(agent["description"]),
-        delegates_sentence=build_delegates_sentence(agent),
-        core_path=agent["paths"]["core"],
-        mistakes_path=agent["paths"]["mistakes"],
-        cheatsheet_index_path=agent["paths"]["cheatsheet_index"],
-    )
-
 
 def generate_expected_files(manifest: dict) -> list[tuple[str, str]]:
     """Return list of (relative_path, expected_content) for all generated files."""
@@ -303,7 +207,7 @@ def generate_expected_files(manifest: dict) -> list[tuple[str, str]]:
 
 
 # ---------------------------------------------------------------------------
-# Check implementations
+# Check implementations (1–8: existing, 9–12: new)
 # ---------------------------------------------------------------------------
 
 def check_manifest(repo_root: Path) -> dict | None:
@@ -311,7 +215,7 @@ def check_manifest(repo_root: Path) -> dict | None:
     manifest_path = repo_root / "agents" / "manifest.json"
 
     if not manifest_path.exists():
-        record("FAIL", "manifest-exists", f"agents/manifest.json not found")
+        record("FAIL", "manifest-exists", "agents/manifest.json not found")
         return None
 
     try:
@@ -324,7 +228,6 @@ def check_manifest(repo_root: Path) -> dict | None:
         record("FAIL", "manifest-utf8", f"Not valid UTF-8: {e}")
         return None
 
-    # Check schema_version
     if "schema_version" not in manifest:
         record("FAIL", "manifest-schema", "Missing 'schema_version' field")
         return None
@@ -333,7 +236,6 @@ def check_manifest(repo_root: Path) -> dict | None:
         record("FAIL", "manifest-agents", "Missing or invalid 'agents' array")
         return None
 
-    # Check required fields on each agent
     all_ok = True
     for agent in manifest["agents"]:
         slug = agent.get("slug", agent.get("name", "UNKNOWN"))
@@ -363,12 +265,10 @@ def check_path_resolution(repo_root: Path, manifest: dict) -> None:
         for key, rel_path in paths.items():
             full_path = repo_root / rel_path
             if rel_path.endswith("/"):
-                # Directory
                 if not full_path.is_dir():
                     record("FAIL", "path-resolution", f"Agent '{slug}': {key} directory not found: {rel_path}")
                     all_ok = False
             else:
-                # File
                 if not full_path.is_file():
                     record("FAIL", "path-resolution", f"Agent '{slug}': {key} file not found: {rel_path}")
                     all_ok = False
@@ -384,7 +284,6 @@ def check_core_frontmatter(repo_root: Path, manifest: dict) -> None:
         slug = agent["slug"]
         core_path = repo_root / agent["paths"]["core"]
         if not core_path.is_file():
-            # Already caught by path-resolution check
             continue
 
         try:
@@ -442,7 +341,6 @@ def check_cheatsheet_frontmatter(repo_root: Path, manifest: dict) -> None:
 
     if warn_count == 0:
         record("PASS", "cheatsheet-frontmatter", f"All {total_checked} cheatsheets have frontmatter")
-    # Warnings are already recorded individually above
 
 
 def check_index_accuracy(repo_root: Path, manifest: dict, fix: bool) -> None:
@@ -476,14 +374,8 @@ def check_index_accuracy(repo_root: Path, manifest: dict, fix: bool) -> None:
             stale_count += 1
             continue
 
-        # Compare only the file list portion — check that each cheatsheet file is represented
-        # We do a normalized comparison: extract filenames from both
-        expected_files = set(
-            re.findall(r"\|\s*(\S+\.md)\s*\|", expected)
-        )
-        actual_files = set(
-            re.findall(r"\|\s*`?(\S+\.md)`?\s*\|", actual)
-        )
+        expected_files = set(re.findall(r"\|\s*(\S+\.md)\s*\|", expected))
+        actual_files = set(re.findall(r"\|\s*`?(\S+\.md)`?\s*\|", actual))
 
         if expected_files != actual_files:
             if fix:
@@ -516,7 +408,6 @@ def check_utf8(repo_root: Path) -> None:
     total = 0
 
     for md_file in repo_root.rglob("*.md"):
-        # Skip .git directory
         parts = md_file.relative_to(repo_root).parts
         if ".git" in parts:
             continue
@@ -557,7 +448,6 @@ def check_generated_drift(repo_root: Path, manifest: dict) -> None:
             drift_count += 1
             continue
 
-        # Check AUTO-GENERATED header
         if AUTO_GENERATED_HEADER not in actual:
             record("FAIL", "generated-drift", f"Missing AUTO-GENERATED header: {rel_path}")
             drift_count += 1
@@ -568,7 +458,6 @@ def check_generated_drift(repo_root: Path, manifest: dict) -> None:
             drift_count += 1
 
     total = len(expected_files)
-    ok = total - drift_count - missing_count
     if drift_count == 0 and missing_count == 0:
         record("PASS", "generated-drift", f"All {total} generated files match manifest")
 
@@ -592,7 +481,94 @@ def check_memory_structure(repo_root: Path, manifest: dict) -> None:
                 all_ok = False
 
     if all_ok:
-        record("PASS", "memory-structure", f"All agents have required memory files")
+        record("PASS", "memory-structure", "All agents have required memory files")
+
+
+def check_skills_validation(repo_root: Path) -> None:
+    """Check 9: Framework skills exist with valid frontmatter."""
+    all_ok = True
+
+    for skill_name in FRAMEWORK_SKILLS:
+        skill_path = repo_root / ".claude" / "skills" / skill_name / "SKILL.md"
+        if not skill_path.is_file():
+            record("FAIL", "skills-validation", f"Framework skill missing: .claude/skills/{skill_name}/SKILL.md")
+            all_ok = False
+            continue
+
+        try:
+            text = skill_path.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError) as e:
+            record("FAIL", "skills-validation", f"Cannot read skill {skill_name}: {e}")
+            all_ok = False
+            continue
+
+        fm = parse_frontmatter(text)
+        if fm is None:
+            record("FAIL", "skills-validation", f"Skill '{skill_name}' has no YAML frontmatter")
+            all_ok = False
+            continue
+
+        if "name" not in fm:
+            record("FAIL", "skills-validation", f"Skill '{skill_name}' missing 'name' in frontmatter")
+            all_ok = False
+        if "description" not in fm:
+            record("FAIL", "skills-validation", f"Skill '{skill_name}' missing 'description' in frontmatter")
+            all_ok = False
+
+    if all_ok:
+        record("PASS", "skills-validation", f"All {len(FRAMEWORK_SKILLS)} framework skills valid")
+
+
+def check_v2_fields(repo_root: Path, manifest: dict) -> None:
+    """Check 10: v2.0 fields have valid values; skills refs resolve."""
+    schema = manifest.get("schema_version", "1.0")
+    if not schema.startswith("2"):
+        record("PASS", "v2-fields", "Skipped (schema < 2.0)")
+        return
+
+    all_ok = True
+
+    for agent in manifest["agents"]:
+        slug = agent["slug"]
+
+        # permissionMode
+        perm = agent.get("permissionMode", "default")
+        if perm not in VALID_PERMISSION_MODES:
+            record("FAIL", "v2-fields", f"Agent '{slug}': invalid permissionMode '{perm}'")
+            all_ok = False
+
+        # tools — must be null or list of strings
+        tools = agent.get("tools", None)
+        if tools is not None and not isinstance(tools, list):
+            record("FAIL", "v2-fields", f"Agent '{slug}': tools must be null or array")
+            all_ok = False
+
+        # memory
+        mem = agent.get("memory", None)
+        if mem not in VALID_MEMORY_SCOPES:
+            record("FAIL", "v2-fields", f"Agent '{slug}': invalid memory scope '{mem}'")
+            all_ok = False
+
+        # isolation
+        iso = agent.get("isolation", None)
+        if iso not in VALID_ISOLATION_MODES:
+            record("FAIL", "v2-fields", f"Agent '{slug}': invalid isolation mode '{iso}'")
+            all_ok = False
+
+        # skills — each ref must resolve to a framework skill
+        skills = agent.get("skills", [])
+        if not isinstance(skills, list):
+            record("FAIL", "v2-fields", f"Agent '{slug}': skills must be an array")
+            all_ok = False
+        else:
+            for skill_ref in skills:
+                skill_path = repo_root / ".claude" / "skills" / skill_ref / "SKILL.md"
+                if not skill_path.is_file():
+                    record("FAIL", "v2-fields", f"Agent '{slug}': skill ref '{skill_ref}' does not resolve to .claude/skills/{skill_ref}/SKILL.md")
+                    all_ok = False
+
+    if all_ok:
+        record("PASS", "v2-fields", "All v2.0 fields valid and skill refs resolve")
 
 
 # ---------------------------------------------------------------------------
@@ -613,9 +589,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    # Resolve repo root: parent of the directory containing this script
-    script_dir = Path(__file__).resolve().parent
-    repo_root = script_dir.parent
+    repo_root = _SCRIPT_DIR.parent
 
     print(f"Validating agentsouls repository at: {repo_root}")
     print()
@@ -624,7 +598,6 @@ def main() -> None:
     manifest = check_manifest(repo_root)
 
     if manifest is None:
-        # Cannot proceed without a valid manifest
         print()
         exit_code = print_results()
         sys.exit(exit_code)
@@ -649,6 +622,12 @@ def main() -> None:
 
     # Check 8: Memory file structure
     check_memory_structure(repo_root, manifest)
+
+    # Check 9: Skills validation
+    check_skills_validation(repo_root)
+
+    # Check 10: v2 fields validation
+    check_v2_fields(repo_root, manifest)
 
     print()
     exit_code = print_results()
