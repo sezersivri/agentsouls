@@ -10,7 +10,7 @@ Checks performed:
     1.  Manifest validation (schema, required fields)
     2.  Path resolution (all manifest paths exist)
     3.  CORE.md frontmatter (required YAML fields)
-    4.  Cheatsheet frontmatter (warning if missing)
+    4.  Cheatsheet frontmatter (FAIL if missing — all cheatsheets must have frontmatter)
     5.  _index.md accuracy (matches actual cheatsheet files)
     6.  UTF-8 validation (all .md files)
     7.  Generated file drift (.claude/agents/*.md, .agents/skills/*/SKILL.md)
@@ -64,6 +64,8 @@ REQUIRED_PATH_FIELDS = [
     "mistakes",
     "session_log",
     "decisions",
+    "brief",
+    "open_questions",
 ]
 
 REQUIRED_CORE_FRONTMATTER = ["agent_name", "domain", "role", "model"]
@@ -309,8 +311,8 @@ def check_core_frontmatter(repo_root: Path, manifest: dict) -> None:
 
 
 def check_cheatsheet_frontmatter(repo_root: Path, manifest: dict) -> None:
-    """Check 4: Cheatsheet .md files should have YAML frontmatter (WARN if missing)."""
-    warn_count = 0
+    """Check 4: Cheatsheet .md files MUST have YAML frontmatter (FAIL if missing)."""
+    fail_count = 0
     total_checked = 0
 
     for agent in manifest["agents"]:
@@ -327,19 +329,19 @@ def check_cheatsheet_frontmatter(repo_root: Path, manifest: dict) -> None:
             try:
                 text = md_file.read_text(encoding="utf-8")
             except (UnicodeDecodeError, OSError):
-                warn_count += 1
+                fail_count += 1
                 continue
 
             fm = parse_frontmatter(text)
             if fm is None:
                 record(
-                    "WARN",
+                    "FAIL",
                     "cheatsheet-frontmatter",
                     f"Agent '{slug}': {md_file.name} has no YAML frontmatter",
                 )
-                warn_count += 1
+                fail_count += 1
 
-    if warn_count == 0:
+    if fail_count == 0:
         record("PASS", "cheatsheet-frontmatter", f"All {total_checked} cheatsheets have frontmatter")
 
 
@@ -465,7 +467,7 @@ def check_generated_drift(repo_root: Path, manifest: dict) -> None:
 def check_memory_structure(repo_root: Path, manifest: dict) -> None:
     """Check 8: Memory files exist for each agent."""
     all_ok = True
-    memory_files = ["session_log", "mistakes", "decisions"]
+    memory_files = ["session_log", "mistakes", "decisions", "brief", "open_questions"]
 
     for agent in manifest["agents"]:
         slug = agent["slug"]

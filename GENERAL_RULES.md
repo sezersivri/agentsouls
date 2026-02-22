@@ -19,9 +19,10 @@ When summoned (starting a session), every agent MUST:
 
 1. Read their own `CORE.md` completely — this is who you are
 2. Check `memory/mistakes.md` — know what to avoid
-3. Scan `cheatsheets/_index.md` — know what knowledge is available
-4. Load only the cheatsheets relevant to the current task (progressive disclosure)
-5. Check `shared-knowledge/active-tasks.md` if collaborating with other agents
+3. Read `memory/brief.md` — quick state snapshot (replaces reading full session-log on summon; keeps context load bounded)
+4. Scan `cheatsheets/_index.md` — know what knowledge is available
+5. Load only the cheatsheets relevant to the current task (progressive disclosure)
+6. Check `shared-knowledge/active-tasks.md` if collaborating with other agents
 
 **Never skip steps 1-3.** They exist to prevent repeated mistakes and ensure consistent identity.
 
@@ -35,17 +36,25 @@ When summoned (starting a session), every agent MUST:
 ### Session End Protocol (MANDATORY — do this before EVERY session ends)
 
 1. **Update session log:** Add entry to `memory/session-log.md` with a unique session ID (format: `{slug}-{YYYY-MM-DD}-{NNN}` where NNN is zero-padded, auto-incremented from existing entries for that date). Include what you did, learned, and any mistakes.
-2. **Record mistakes:** Ensure all mistakes are in `memory/mistakes.md` with root cause and prevention
-3. **Record decisions:** Ensure key decisions are in `memory/decisions.md` with rationale
-4. **Update cheatsheets:** If you learned anything new, create or update cheatsheets
-5. **Cross-agent learnings:** If your work affects other agents, update `shared-knowledge/cross-agent-learnings.md`
-6. **Commit (recommended):** `git add . && git commit -m "[agent-name] session YYYY-MM-DD: brief description"` — Memory updates above are MANDATORY; the git commit is RECOMMENDED but not required (agents may run in dirty trees or user-controlled workflows).
+2. **Update brief:** Rewrite `memory/brief.md` with 1-3 bullet summary of current state after this session. Keep it under 20 lines — this is what future-you reads on summon, not the full log.
+3. **Record mistakes:** Ensure all mistakes are in `memory/mistakes.md` with root cause and prevention
+4. **Record decisions:** Ensure key decisions are in `memory/decisions.md` with rationale
+5. **Update cheatsheets:** If you learned anything new, create or update cheatsheets
+6. **Cross-agent learnings:** If your work affects other agents, update `shared-knowledge/cross-agent-learnings.md`
+7. **Commit (recommended):** `git add . && git commit -m "[agent-name] session YYYY-MM-DD: brief description"` — Memory updates above are MANDATORY; the git commit is RECOMMENDED but not required (agents may run in dirty trees or user-controlled workflows).
 
 ### Memory Hygiene
 - Cheatsheets: max ~500 lines each. If one grows too large, split it into focused sub-topics
 - One topic per cheatsheet file. Use kebab-case filenames
 - Always update `cheatsheets/_index.md` when adding/modifying cheatsheets
 - Mark confidence levels: `[VERIFIED]` `[TEXTBOOK]` `[DERIVED]` `[UNCERTAIN]`
+
+### Memory Hygiene for `brief.md`
+
+- Keep `memory/brief.md` under 20 lines at all times
+- Do not let it accumulate history — it is a snapshot, not a log
+- When updating at session end, overwrite the body (keep the header intact), not append
+- If in doubt about what to include: state → last 1-2 key outcomes → next open questions
 
 ### Memory Pruning
 

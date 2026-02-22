@@ -13,17 +13,19 @@ This is MANDATORY before ending any work session. Complete ALL steps:
    - What was done, what was learned, mistakes made, decisions made
    - Cheatsheets updated, follow-up needed
 
-2. **Record mistakes:** If any mistakes were made during this session, add them to `memory/mistakes.md` with:
+2. **Update brief:** Rewrite `memory/brief.md` with 1-3 bullet summary of current state after this session. Keep under 20 lines. This is what future-you reads on summon — make it useful, not exhaustive. Overwrite the body; do not append.
+
+3. **Record mistakes:** If any mistakes were made during this session, add them to `memory/mistakes.md` with:
    - Severity tag [CRITICAL/MODERATE/MINOR]
    - What happened, root cause, impact, fix, prevention rule
 
-3. **Record decisions:** If any key technical decisions were made, add them to `memory/decisions.md` with:
+4. **Record decisions:** If any key technical decisions were made, add them to `memory/decisions.md` with:
    - Context, options considered, decision, rationale, consequences
 
-4. **Update cheatsheets:** If new knowledge was learned, create or update cheatsheets in the agent's `cheatsheets/` directory and update `_index.md`
+5. **Update cheatsheets:** If new knowledge was learned, create or update cheatsheets in the agent's `cheatsheets/` directory and update `_index.md`
 
-5. **Cross-agent learnings:** If anything learned affects other agents, update `shared-knowledge/cross-agent-learnings.md`
+6. **Cross-agent learnings:** If anything learned affects other agents, update `shared-knowledge/cross-agent-learnings.md`
 
-6. **Commit:** `git add . && git commit -m "[agent-name] session YYYY-MM-DD: brief description"`
+7. **Commit:** `git add . && git commit -m "[agent-name] session YYYY-MM-DD: brief description"`
 
 Report what was updated when complete.

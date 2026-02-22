@@ -130,7 +130,8 @@
         "memory",
         "mistakes",
         "session_log",
-        "decisions"
+        "decisions",
+        "brief"
       ],
       "additionalProperties": false,
       "properties": {
@@ -140,7 +141,9 @@
         "memory":           { "type": "string", "description": "Path to memory/ directory" },
         "mistakes":         { "type": "string", "description": "Path to memory/mistakes.md" },
         "session_log":      { "type": "string", "description": "Path to memory/session-log.md" },
-        "decisions":        { "type": "string", "description": "Path to memory/decisions.md" }
+        "decisions":        { "type": "string", "description": "Path to memory/decisions.md" },
+        "brief":            { "type": "string", "description": "Path to memory/brief.md — token-capped state snapshot, read on summon instead of full session-log" },
+        "open_questions":   { "type": "string", "description": "Path to memory/open-questions.md — unresolved domain questions (optional)" }
       }
     }
   }
