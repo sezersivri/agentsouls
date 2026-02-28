@@ -15,8 +15,10 @@ Examples:
 - `/learn https://example.com/docs` — distill a URL (fetch first, then process)
 - `/learn "React hooks best practices"` — research a topic and create a cheatsheet
 
+**Source hierarchy:** Prefer official documentation (HIGH → `[VERIFIED]`) over multiple independent web sources (MEDIUM → `[TEXTBOOK]`/`[DERIVED]`) over single-source or training knowledge (LOW → `[UNCERTAIN]`, flag explicitly). Disclose the tier in your cheatsheet frontmatter.
+
 Steps:
-1. Read the source material carefully
+1. Read the source material carefully. If the source contains stubs, TODOs, placeholder text, or template brackets (e.g. `[INSERT HERE]`, `# TODO`, empty implementations), flag this before distilling — incomplete sources produce unreliable cheatsheets.
 2. Identify key concepts, patterns, pitfalls, and reference data
 3. Create a new cheatsheet (or update existing one) following the template in `templates/cheatsheet-template.md`:
    - YAML frontmatter with topic, agent, confidence level, source, date

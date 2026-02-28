@@ -72,7 +72,7 @@ REQUIRED_CORE_FRONTMATTER = ["agent_name", "domain", "role", "model"]
 
 AUTO_GENERATED_HEADER = "<!-- AUTO-GENERATED from agents/manifest.json"
 
-FRAMEWORK_SKILLS = ["summon", "session-end", "learn"]
+FRAMEWORK_SKILLS = ["summon", "session-end", "learn", "debug"]
 
 # ---------------------------------------------------------------------------
 # Result tracking

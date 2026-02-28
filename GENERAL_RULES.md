@@ -56,6 +56,10 @@ When summoned (starting a session), every agent MUST:
 - When updating at session end, overwrite the body (keep the header intact), not append
 - If in doubt about what to include: state → last 1-2 key outcomes → next open questions
 
+### Context Limit Awareness
+
+If you sense you are running low on context (very long session, many tool calls, approaching limits), immediately execute the session-end protocol to preserve state — *even if the task is incomplete*. Use a `wip:` commit. It is better to stop cleanly and resume fresh than to lose work to a context overflow.
+
 ### Memory Pruning
 
 When `memory/session-log.md` exceeds 100 entries:
@@ -83,6 +87,16 @@ When studying a reference document (PDF, textbook, paper, documentation):
 6. Update `cheatsheets/_index.md` with the new entry
 7. Commit: `git add . && git commit -m "[agent-name] learned: [topic] from [source]"`
 
+### Source Hierarchy (when researching or verifying information)
+
+Use the highest-confidence source available, and disclose the tier in your cheatsheet frontmatter:
+
+1. **Official documentation** (library docs, API references, changelogs) — use `[VERIFIED]`
+2. **Multiple independent web sources agreeing** — use `[TEXTBOOK]` or `[DERIVED]`
+3. **Single web source or model training knowledge** — use `[UNCERTAIN]` and flag explicitly
+
+Training data may be 6–18 months stale. Verify version-specific claims before distilling. When uncertain, note what would be needed to confirm.
+
 ## 4. Collaboration Rules
 
 ### Communicating with Other Agents
@@ -109,6 +123,48 @@ When studying a reference document (PDF, textbook, paper, documentation):
 4. Validate inputs at system boundaries (user input, external APIs)
 5. Error messages must say what went wrong AND what to do about it
 6. Follow the project's existing conventions (check `shared-knowledge/team-conventions.md`)
+
+### Deviation Handling (when to push forward vs. stop)
+
+- **Continue autonomously:** Fix code bugs inline, add missing critical features (validation, error handling), resolve blockers (missing imports, dependencies).
+- **Stop and document:** Architectural changes, design decisions, or anything that alters the system's structure or public API. Log it in `memory/open-questions.md` and await human direction before proceeding.
+
+### Checkpoint Types
+
+When you must pause and involve the human, use the right type:
+
+- **human-verify** — Work is done; the human must test it (visual UI, interactive flow, end-to-end behavior). Set up everything you can (start servers, seed data, configure env variables) *before* pausing. Never ask the human to run CLI commands you can run yourself.
+- **decision** — Implementation direction is unclear. Present 2–4 concrete options with pros/cons. Wait for selection before proceeding.
+- **human-action** — Requires a physical or manual step with no CLI/API alternative (OAuth approval, email verification link, 2FA code). Describe exactly what to do and what value to return.
+
+### Self-Verification Checklist (run before marking any coding task complete)
+
+For every artifact you create or significantly modify, verify all three tiers:
+
+- **Tier 1 — Exists:** File is present at the expected path
+- **Tier 2 — Substantive:** Contains real implementation — not TODOs, `return null`, placeholder text, or empty stub bodies
+- **Tier 3 — Wired:** Imported, called, and used somewhere — not dead code; results actually consumed
+
+All three tiers must pass. A file that exists but returns `null` fails Tier 2.
+
+### Anti-Patterns to Eliminate Before Finishing
+
+Before marking a coding task complete, scan your work for:
+- `TODO` / `FIXME` / `HACK` comments in production code paths
+- Empty return values (`return null`, `return {}`, `return []`) where real logic belongs
+- Hardcoded values where dynamic or configurable values are expected
+- Console-only debug output (print statements with no logging framework)
+- Placeholder text (`lorem ipsum`, `[INSERT HERE]`, `example@example.com`)
+
+### TDD Applicability
+
+**Apply TDD when:** business logic with clear input/output contracts, API endpoints, validation rules, algorithms, state machines.
+
+**Skip TDD for:** UI styling and visual components, configuration and glue code, exploratory prototyping, trivial CRUD with no branching logic.
+
+### Analysis Guard
+
+If you have made 5 or more consecutive file reads or searches without writing any code, stop. Either write the first line of code or explicitly state what is blocking you. Never spend an entire session reading without producing output.
 
 ## 6. Communication Style
 
@@ -150,6 +206,21 @@ After completing any significant task:
   - `[architect] decision: chose PostgreSQL over MongoDB for structured data`
 - Never force-push. Never rewrite history.
 
+### Commit Decision Matrix
+
+| Event | Commit? | Message type |
+|-------|---------|-------------|
+| Feature / task complete | ✅ Yes | `feat(scope): description` |
+| Bug fixed | ✅ Yes | `fix(scope): description` |
+| Tests added | ✅ Yes | `test(scope): description` |
+| Refactor (no behavior change) | ✅ Yes | `refactor(scope): description` |
+| Docs / cheatsheet updated | ✅ Yes | `docs(scope): description` |
+| Intermediate research (file reads only) | ❌ No | (not an outcome) |
+| Partial implementation, mid-task | ❌ No | Wait until the task unit is complete |
+| WIP — interrupted mid-task | ✅ Yes | `wip: [scope] paused — [reason]` |
+
+Commit outcomes, not process. Git history should show shipped work and named decisions.
+
 ## 10. Safety & Boundaries
 
 - Never fabricate data, citations, or results
@@ -167,6 +238,7 @@ Framework skills provide standardized agent operations. They live in `.claude/sk
 | **summon** | `/summon <name>` | Load an agent's full context and identity |
 | **session-end** | `/session-end` | Execute the Session End Protocol (log, record, commit) |
 | **learn** | `/learn <source>` | Study source material and distill into cheatsheets |
+| **debug** | `/debug <problem>` | Scientific debugging protocol (hypothesize → test → fix) |
 
 Skills are automatically available to agents that list them in their manifest `skills` field. When an agent wrapper includes `skills: session-end, learn`, those skills are pre-loaded and ready to invoke.
 

@@ -8,6 +8,13 @@ Execute the Session End Protocol for the currently active agent.
 
 This is MANDATORY before ending any work session. Complete ALL steps:
 
+**Pre-check (if coding work was done this session):** Before logging anything, verify your artifacts:
+- **Exists** — each file is present at the expected path
+- **Substantive** — no stubs, TODOs, or empty returns in production code paths
+- **Wired** — imported, called, and result consumed (not dead code)
+
+Also scan for anti-patterns: TODO comments, hardcoded values, placeholder text. Fix any issues *before* proceeding to the log steps.
+
 1. **Update session log:** Add an entry to the agent's `memory/session-log.md` with:
    - Date, project, task, outcome (SUCCESS/PARTIAL/FAILED)
    - What was done, what was learned, mistakes made, decisions made
